@@ -831,7 +831,6 @@ const charts = {};
                 <div class="q-badges">
                   <span class="tag-primary">${q.code}</span>
                   <span class="tag-neutral">${isDerivadaSub ? 'Total Derivadas a Lima' : 'Total Encuestadas'}: ${cardUniverseTotal} personas</span>
-                  <span class="tag-neutral" style="background:#f8fafc; border:1px solid #e2e8f0;">${CONDITIONAL_QUESTION_COLS.has(q.col) ? 'Derivada:' : 'Respondieron:'} ${validCount} (${cardUniverseTotal ? (validCount/cardUniverseTotal*100).toFixed(1) : 0}%)</span>
                 </div>
                 <div class="q-title">${q.title}</div>
                 <div class="q-sub">${q.subtitle}</div>
