@@ -652,6 +652,7 @@ const charts = {};
 
       blocks.forEach((blockName, bIdx) => {
         const blockQs = DATA.questions.filter(q => {
+          if (q.col === 'L') return false; // Ocultar Perfil 5 (Consentimiento informado)
           if (q.block !== blockName) return false;
           if (!search) return true;
           return (
