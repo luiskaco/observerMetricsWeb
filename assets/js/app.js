@@ -17,7 +17,7 @@ const charts = {};
       'L': ['Sí', 'No'],
 
       // Pregunta 2: Derivada a Lima
-      'N': ['Sí', 'No', 'No corresponde (reside en Lima)', 'No corresponde'],
+      'N': ['Sí', 'No', 'No corresponde (Reside en Lima)', 'No corresponde'],
 
       // Pregunta 3: Etapa de derivación a Lima
       'O': [
@@ -358,6 +358,7 @@ const charts = {};
         case 'N': // Derivada a Lima
           if (ans === 'Sí me derivaron a Lima') return 'Sí';
           if (ans === 'No me derivaron a Lima') return 'No';
+          if (ans === 'No corresponde (reside en Lima)') return 'No corresponde (Reside en Lima)';
           break;
 
         case 'P': // Q4 Tiempo espera Lima
