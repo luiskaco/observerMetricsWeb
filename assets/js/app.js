@@ -726,7 +726,8 @@ const charts = {};
             : records;
 
           evalRecords.forEach(r => {
-            let ans = r[q.col];
+            // En Pregunta 1 (M: Lugar de diagnóstico), replicar exactamente Región de Residencia (H)
+            let ans = (q.col === 'M') ? r.H : r[q.col];
             ans = normalizeAnswer(q.col, ans);
 
             // En Pregunta 3 y 4, no añadir el item 'No corresponde'
