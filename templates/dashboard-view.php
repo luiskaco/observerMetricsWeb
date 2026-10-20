@@ -8,18 +8,13 @@ if ( ! defined( 'ABSPATH' ) ) {
   <header class="hero">
     <div class="hero-inner">
       <h1>Resultados de la Encuesta: Viaje de la Paciente con Cáncer de Mama</h1>
-      <p>Análisis detallado pregunta por pregunta de las <strong>612 personas</strong> registradas en la pestaña <strong>TOTAL</strong>, unificando las respuestas de la Encuesta Completa (280 personas) y la Encuesta Corta (332 personas).</p>
+      <p>Análisis detallado pregunta por pregunta de la muestra consolidada de <strong>612 personas</strong> diagnosticadas con cáncer de mama en el Perú.</p>
 
       <div class="kpi-row">
         <div class="kpi-box">
           <div class="lbl">Total Personas Encuestadas</div>
-          <div class="val" id="kpi-total">612</div>
-          <div class="sub" id="kpi-total-sub">100% de la pestaña TOTAL</div>
-        </div>
-        <div class="kpi-box">
-          <div class="lbl">Encuesta Completa / Corta</div>
-          <div class="val" id="kpi-split">280 / 332</div>
-          <div class="sub">Personas por versión de encuesta</div>
+          <div class="val" id="kpi-total">612 personas</div>
+          <div class="sub" id="kpi-total-sub">100% de la muestra total</div>
         </div>
         <div class="kpi-box">
           <div class="lbl">Detección por Bulto o Nódulo</div>
@@ -43,14 +38,6 @@ if ( ! defined( 'ABSPATH' ) ) {
   <div class="filter-bar">
     <div class="filter-inner">
       <div class="f-controls">
-        <div class="f-group">
-          <label for="f-survey">Versión de Encuesta</label>
-          <select id="f-survey">
-            <option value="ALL">Ambas Encuestas consolidadas (612)</option>
-            <option value="Encuesta Completa">Solo Encuesta Completa (280)</option>
-            <option value="Encuesta Corta">Solo Encuesta Corta (332)</option>
-          </select>
-        </div>
         <div class="f-group">
           <label for="f-system">Sistema de Salud</label>
           <select id="f-system">

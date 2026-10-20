@@ -597,6 +597,12 @@ table.ans-table tr.na-row td {
   display: flex;
 }
 
+.mini-bar-fill {
+  background: var(--primary);
+  height: 100%;
+  border-radius: 999px;
+}
+
 .mini-bar-long {
   background: var(--primary);
   height: 100%;

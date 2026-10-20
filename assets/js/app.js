@@ -6,12 +6,10 @@ const charts = {};
     ];
 
     function getFilteredRecords() {
-      const sSurvey = document.getElementById('f-survey').value;
-      const sSystem = document.getElementById('f-system').value;
-      const sRegion = document.getElementById('f-region').value;
+      const sSystem = document.getElementById('f-system') ? document.getElementById('f-system').value : 'ALL';
+      const sRegion = document.getElementById('f-region') ? document.getElementById('f-region').value : 'ALL';
 
       return DATA.records.filter(r => {
-        if (sSurvey !== 'ALL' && r.survey !== sSurvey) return false;
         if (sSystem !== 'ALL' && r.J !== sSystem) return false;
         if (sRegion === 'LIMA' && r.H !== 'Lima') return false;
         if (sRegion === 'PROV' && r.H === 'Lima') return false;
@@ -20,7 +18,6 @@ const charts = {};
     }
 
     function updateActiveFilterChips(records) {
-      const sSurvey = document.getElementById('f-survey');
       const sSystem = document.getElementById('f-system');
       const sRegion = document.getElementById('f-region');
       const sSearch = document.getElementById('f-search');
@@ -36,20 +33,13 @@ const charts = {};
 
       const activeList = [];
 
-      if (sSurvey.value !== 'ALL') {
-        const txt = sSurvey.options[sSurvey.selectedIndex].text.split('(')[0].trim();
-        activeList.push({
-          label: `Encuesta: ${txt}`,
-          clear: () => { sSurvey.value = 'ALL'; renderDashboard(); }
-        });
-      }
-      if (sSystem.value !== 'ALL') {
+      if (sSystem && sSystem.value !== 'ALL') {
         activeList.push({
           label: `Sistema: ${sSystem.value}`,
           clear: () => { sSystem.value = 'ALL'; renderDashboard(); }
         });
       }
-      if (sRegion.value !== 'ALL') {
+      if (sRegion && sRegion.value !== 'ALL') {
         const txt = sRegion.options[sRegion.selectedIndex].text.split('(')[0].trim();
         activeList.push({
           label: `Región: ${txt}`,
@@ -92,9 +82,6 @@ const charts = {};
 
     function updateKPIs(records) {
       const total = records.length;
-      const longC = records.filter(r => r.survey === 'Encuesta Completa').length;
-      const shortC = records.filter(r => r.survey === 'Encuesta Corta').length;
-
       const validQ = records.filter(r => r.Q !== 'Sin respuesta').length;
       const bultoC = records.filter(r => r.Q === 'Encontró un bulto o nódulo').length;
 
@@ -104,12 +91,22 @@ const charts = {};
       const validAU = records.filter(r => r.AU !== 'Sin respuesta').length;
       const retC = records.filter(r => r.AU === 'Sí').length;
 
-      document.getElementById('kpi-total').textContent = total + ' personas';
-      document.getElementById('kpi-total-sub').textContent = total === DATA.totalCount ? '100% de la pestaña TOTAL' : ((total / DATA.totalCount * 100).toFixed(1) + '% del total de ' + DATA.totalCount);
-      document.getElementById('kpi-split').textContent = longC + ' / ' + shortC;
-      document.getElementById('kpi-bulto').textContent = validQ ? (bultoC / validQ * 100).toFixed(1) + '%' : '0%';
-      document.getElementById('kpi-privado').textContent = validAT ? (privC / validAT * 100).toFixed(1) + '%' : '0%';
-      document.getElementById('kpi-retraso').textContent = validAU ? (retC / validAU * 100).toFixed(1) + '%' : '0%';
+      const elTotal = document.getElementById('kpi-total');
+      if (elTotal) elTotal.textContent = total + ' personas';
+
+      const elTotalSub = document.getElementById('kpi-total-sub');
+      if (elTotalSub) {
+        elTotalSub.textContent = total === DATA.totalCount ? '100% de la muestra total' : ((total / DATA.totalCount * 100).toFixed(1) + '% del total de ' + DATA.totalCount);
+      }
+
+      const elBulto = document.getElementById('kpi-bulto');
+      if (elBulto) elBulto.textContent = validQ ? (bultoC / validQ * 100).toFixed(1) + '%' : '0%';
+
+      const elPrivado = document.getElementById('kpi-privado');
+      if (elPrivado) elPrivado.textContent = validAT ? (privC / validAT * 100).toFixed(1) + '%' : '0%';
+
+      const elRetraso = document.getElementById('kpi-retraso');
+      if (elRetraso) elRetraso.textContent = validAU ? (retC / validAU * 100).toFixed(1) + '%' : '0%';
     }
 
     function renderDashboard() {
@@ -207,11 +204,9 @@ const charts = {};
             else validCount++;
 
             if (!counts[ans]) {
-              counts[ans] = { total: 0, long: 0, short: 0 };
+              counts[ans] = { total: 0 };
             }
             counts[ans].total++;
-            if (r.survey === 'Encuesta Completa') counts[ans].long++;
-            else counts[ans].short++;
           });
 
           const entries = Object.entries(counts).sort((a, b) => {
@@ -234,8 +229,7 @@ const charts = {};
             const isNA = ans === 'Sin respuesta';
             const pctTotal = records.length ? ((st.total / records.length) * 100).toFixed(1) : '0.0';
             const pctValid = (!isNA && validCount) ? ((st.total / validCount) * 100).toFixed(1) + '%' : '—';
-            const wLong = records.length ? (st.long / records.length * 100).toFixed(1) : 0;
-            const wShort = records.length ? (st.short / records.length * 100).toFixed(1) : 0;
+            const wBar = records.length ? (st.total / records.length * 100).toFixed(1) : 0;
 
             return `
               <tr class="${isNA ? 'na-row' : ''}">
@@ -243,12 +237,9 @@ const charts = {};
                 <td class="num col-count" style="font-weight:700;">${st.total}</td>
                 <td class="num col-pct"><span class="pct-badge">${pctTotal}%</span></td>
                 <td class="num col-extra" style="color:var(--text-muted); font-size:0.78rem;">${pctValid}</td>
-                <td class="num col-extra" style="color:#432682; font-weight:700;">${st.long}</td>
-                <td class="num col-extra" style="color:#0ea5e9; font-weight:700;">${st.short}</td>
                 <td class="bar-cell col-extra">
-                  <div class="mini-bar-bg" title="Completa: ${st.long} | Corta: ${st.short}">
-                    <div class="mini-bar-long" style="width:${wLong}%"></div>
-                    <div class="mini-bar-short" style="width:${wShort}%"></div>
+                  <div class="mini-bar-bg" title="${st.total} personas (${pctTotal}%)">
+                    <div class="mini-bar-fill" style="width:${wBar}%"></div>
                   </div>
                 </td>
               </tr>
@@ -282,8 +273,6 @@ const charts = {};
                       <th class="num col-count">Personas</th>
                       <th class="num col-pct">% Total</th>
                       <th class="num col-extra">% Válido</th>
-                      <th class="num col-extra" style="color:#432682;">Completa</th>
-                      <th class="num col-extra" style="color:#0ea5e9;">Corta</th>
                       <th class="col-extra">Distribución</th>
                     </tr>
                   </thead>
@@ -304,8 +293,6 @@ const charts = {};
           // Build Chart
           const labels = chartEntries.map(e => e[0]);
           const dTotal = chartEntries.map(e => e[1].total);
-          const dLong = chartEntries.map(e => e[1].long);
-          const dShort = chartEntries.map(e => e[1].short);
           const ctx = document.getElementById('chart-' + q.col).getContext('2d');
 
           if (isDoughnut) {
@@ -352,16 +339,9 @@ const charts = {};
                 labels,
                 datasets: [
                   {
-                    label: 'Encuesta Completa (Personas)',
-                    data: dLong,
-                    backgroundColor: '#432682',
-                    borderRadius: 4,
-                    barPercentage: 0.75
-                  },
-                  {
-                    label: 'Encuesta Corta (Personas)',
-                    data: dShort,
-                    backgroundColor: '#0ea5e9',
+                    label: 'Personas',
+                    data: dTotal,
+                    backgroundColor: labels.map(l => l === 'Sin respuesta' ? '#cbd5e1' : '#432682'),
                     borderRadius: 4,
                     barPercentage: 0.75
                   }
@@ -373,7 +353,6 @@ const charts = {};
                 maintainAspectRatio: false,
                 scales: {
                   x: {
-                    stacked: true,
                     grid: { color: '#f1f5f9' },
                     ticks: { font: { family: 'Inter', size: isMobile ? 9 : 11 } },
                     title: { 
@@ -383,7 +362,6 @@ const charts = {};
                     }
                   },
                   y: {
-                    stacked: true,
                     grid: { display: false },
                     ticks: {
                       font: { family: 'Inter', size: isMobile ? 10 : 11, weight: '600' },
@@ -398,20 +376,15 @@ const charts = {};
                 },
                 plugins: {
                   legend: {
-                    position: 'top',
-                    labels: { 
-                      font: { family: 'Inter', size: isMobile ? 10 : 11, weight: '600' },
-                      boxWidth: isMobile ? 12 : 20,
-                      padding: isMobile ? 6 : 10
-                    }
+                    display: false
                   },
                   tooltip: {
                     callbacks: {
-                      afterBody: function(items) {
-                        const i = items[0].dataIndex;
-                        const tot = dTotal[i];
-                        const pct = validCount ? ((tot / validCount) * 100).toFixed(1) : 0;
-                        return `Total en esta respuesta: ${tot} personas (${pct}% de respuestas válidas)`;
+                      label: function(context) {
+                        const tot = context.raw;
+                        const base = showNAInChart ? records.length : validCount;
+                        const pct = base ? ((tot / base) * 100).toFixed(1) : 0;
+                        return ` ${tot} personas (${pct}%)`;
                       }
                     }
                   }
@@ -472,12 +445,10 @@ const charts = {};
     }
 
     function resetAllFilters() {
-      const sSurvey = document.getElementById('f-survey');
       const sSystem = document.getElementById('f-system');
       const sRegion = document.getElementById('f-region');
       const sSearch = document.getElementById('f-search');
       const sShowNA = document.getElementById('f-show-na');
-      if (sSurvey) sSurvey.value = 'ALL';
       if (sSystem) sSystem.value = 'ALL';
       if (sRegion) sRegion.value = 'ALL';
       if (sSearch) sSearch.value = '';
@@ -488,7 +459,7 @@ const charts = {};
     function initObservatorioMetrics() {
       if (!document.getElementById('questions-root')) return;
 
-      ['f-survey', 'f-system', 'f-region', 'f-show-na'].forEach(id => {
+      ['f-system', 'f-region', 'f-show-na'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', renderDashboard);
       });
