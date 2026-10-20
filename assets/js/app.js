@@ -6,7 +6,8 @@ const charts = {};
     ];
 
     // Lista de columnas que corresponden a preguntas condicionadas (dependen de una pregunta previa)
-    const CONDITIONAL_QUESTION_COLS = new Set(['N', 'O', 'P', 'V', 'W', 'X', 'Y', 'Z', 'AB', 'AC', 'AE', 'AF', 'AG', 'AI', 'AK', 'AM']);
+    // Nota: La pregunta 2 (Col 'N') es padre/directa, por lo que no lleva 'Derivada:'
+    const CONDITIONAL_QUESTION_COLS = new Set(['O', 'P', 'V', 'W', 'X', 'Y', 'Z', 'AB', 'AC', 'AE', 'AF', 'AG', 'AI', 'AK', 'AM']);
 
     // Catálogo de orden canónico oficial por columna (para no ordenar por cantidad de datos)
     const QUESTION_CANONICAL_ORDER = {
@@ -27,8 +28,7 @@ const charts = {};
         'Cirugía',
         'Quimioterapia',
         'Radioterapia',
-        'Otro tratamiento',
-        'No corresponde'
+        'Otro tratamiento'
       ],
 
       // Pregunta 4: Tiempo de espera atención en Lima
@@ -38,8 +38,7 @@ const charts = {};
         'Hasta 30 días',
         'Hasta 3 meses',
         'Hasta 6 meses',
-        'Más de 6 meses',
-        'No corresponde'
+        'Más de 6 meses'
       ],
 
       // Pregunta 5: Detección inicial
@@ -715,14 +714,26 @@ const charts = {};
           });
           sideNav.appendChild(link);
 
-          // Tally responses con normalización de respuestas sobre la totalidad de personas
+          // Tally responses con normalización de respuestas
           const counts = {};
           let validCount = 0;
           let naCount = 0;
 
-          records.forEach(r => {
+          // Para Preguntas 3 y 4 (O y P), evaluar exclusivamente sobre las personas derivadas a Lima
+          const isDerivadaSub = (q.col === 'O' || q.col === 'P');
+          const evalRecords = isDerivadaSub
+            ? records.filter(r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima')
+            : records;
+
+          evalRecords.forEach(r => {
             let ans = r[q.col];
             ans = normalizeAnswer(q.col, ans);
+
+            // En Pregunta 3 y 4, no añadir el item 'No corresponde'
+            if (isDerivadaSub && ans === 'No corresponde') {
+              naCount++;
+              return;
+            }
 
             if (ans === 'No respondió' || ans === 'No corresponde') {
               naCount++;
@@ -787,7 +798,7 @@ const charts = {};
             ? (isMobile ? 260 : 290) 
             : Math.max(isMobile ? 240 : 270, chartEntries.length * (isMobile ? 34 : 38) + 60);
 
-          const cardUniverseTotal = records.length;
+          const cardUniverseTotal = isDerivadaSub ? evalRecords.length : records.length;
 
           const tableRows = entries.map(([ans, st]) => {
             const isNA = ans === 'No respondió' || ans === 'Sin respuesta' || ans === 'No corresponde';
@@ -818,7 +829,7 @@ const charts = {};
               <div>
                 <div class="q-badges">
                   <span class="tag-primary">${q.code}</span>
-                  <span class="tag-neutral">Total Encuestadas: ${cardUniverseTotal} personas</span>
+                  <span class="tag-neutral">${isDerivadaSub ? 'Total Derivadas a Lima' : 'Total Encuestadas'}: ${cardUniverseTotal} personas</span>
                   <span class="tag-neutral" style="background:#f8fafc; border:1px solid #e2e8f0;">${CONDITIONAL_QUESTION_COLS.has(q.col) ? 'Derivada:' : 'Respondieron:'} ${validCount} (${cardUniverseTotal ? (validCount/cardUniverseTotal*100).toFixed(1) : 0}%)</span>
                 </div>
                 <div class="q-title">${q.title}</div>
