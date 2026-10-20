@@ -109,7 +109,7 @@ class Observatorio_Xlsx_Parser {
             foreach ($cols as $col) {
                 $val = $cells[ $col ] ?? '';
                 if ( '' === $val ) {
-                    $val = 'Sin respuesta';
+                    $val = 'No respondió';
                 } else {
                     // Normalizaciones estándar para consistencia
                     if ( 'Si' === $val ) {

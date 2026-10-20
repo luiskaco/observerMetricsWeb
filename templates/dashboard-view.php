@@ -18,18 +18,18 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
         <div class="kpi-box">
           <div class="lbl">Detección por Bulto o Nódulo</div>
-          <div class="val" id="kpi-bulto">44.4%</div>
-          <div class="sub">271 de 611 respuestas válidas</div>
+          <div class="val" id="kpi-bulto">44.3%</div>
+          <div class="sub" id="kpi-bulto-sub">271 de 612 encuestadas</div>
         </div>
         <div class="kpi-box">
           <div class="lbl">Acudió a Privado por Rapidez</div>
-          <div class="val" id="kpi-privado">47.6%</div>
-          <div class="sub">291 de 611 respuestas válidas</div>
+          <div class="val" id="kpi-privado">47.9%</div>
+          <div class="sub" id="kpi-privado-sub">293 de 612 encuestadas</div>
         </div>
         <div class="kpi-box">
           <div class="lbl">Retraso Percibido en Tratamiento</div>
           <div class="val" id="kpi-retraso">60.6%</div>
-          <div class="sub">371 de 612 respuestas válidas</div>
+          <div class="sub" id="kpi-retraso-sub">371 de 612 encuestadas</div>
         </div>
       </div>
     </div>
@@ -38,6 +38,14 @@ if ( ! defined( 'ABSPATH' ) ) {
   <div class="filter-bar">
     <div class="filter-inner">
       <div class="f-controls">
+        <div class="f-group">
+          <label for="f-sector">Sector</label>
+          <select id="f-sector">
+            <option value="ALL">Todos los Sectores (612)</option>
+            <option value="PUBLIC">Público (485)</option>
+            <option value="PRIVATE">Privado (127)</option>
+          </select>
+        </div>
         <div class="f-group">
           <label for="f-system">Sistema de Salud</label>
           <select id="f-system">
@@ -68,7 +76,7 @@ if ( ! defined( 'ABSPATH' ) ) {
           <span id="f-count-text">612 de 612 personas (100%)</span>
         </span>
         <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
-          <input type="checkbox" id="f-show-na" /> Incluir "Sin respuesta" en gráficas
+          <input type="checkbox" id="f-show-na" /> Incluir "No respondió" en gráficas
         </label>
         <button class="btn-reset" id="btn-reset">Restablecer</button>
       </div>

@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'OBS_METRICS_VERSION', '1.2.0' );
+define( 'OBS_METRICS_VERSION', '1.5.2' );
 define( 'OBS_METRICS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OBS_METRICS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 

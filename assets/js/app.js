@@ -5,11 +5,519 @@ const charts = {};
       '#059669', '#d97706', '#2563eb', '#9333ea', '#0d9488'
     ];
 
+    // Lista de columnas que corresponden a preguntas condicionadas (dependen de una pregunta previa)
+    const CONDITIONAL_QUESTION_COLS = new Set(['N', 'O', 'P', 'V', 'W', 'X', 'Y', 'Z', 'AB', 'AC', 'AE', 'AF', 'AG', 'AI', 'AK', 'AM']);
+
+    // Catálogo de orden canónico oficial por columna (para no ordenar por cantidad de datos)
+    const QUESTION_CANONICAL_ORDER = {
+      // Perfil
+      'I': ['Sí', 'No'],
+      'J': ['Minsa', 'EsSalud', 'FFAA', 'Seguro Privado', 'Particular'],
+      'K': ['Menos de 30 años', '30–39 años', '40–49 años', '50–59 años', '60–69 años', '70 años a más', 'No recuerdo'],
+      'L': ['Sí', 'No'],
+
+      // Pregunta 2: Derivada a Lima
+      'N': ['Sí', 'No', 'No corresponde (reside en Lima)', 'No corresponde'],
+
+      // Pregunta 3: Etapa de derivación a Lima
+      'O': [
+        'Confirmación del diagnóstico / biopsia',
+        'Estudios para determinar el estadio',
+        'Consulta con especialista',
+        'Cirugía',
+        'Quimioterapia',
+        'Radioterapia',
+        'Otro tratamiento',
+        'No corresponde'
+      ],
+
+      // Pregunta 4: Tiempo de espera atención en Lima
+      'P': [
+        'Hasta 7 días',
+        'Hasta 15 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No corresponde'
+      ],
+
+      // Pregunta 5: Detección inicial
+      'Q': [
+        'Encontró un bulto o nódulo',
+        'Notó un cambio en la mama, piel o pezón',
+        'Tuvo secreción por el pezón',
+        'Tuvo dolor u otra molestia',
+        'Una mamografía detectó una alteración',
+        'Una ecografía detectó una alteración',
+        'Otro examen detectó una alteración',
+        'Fue detectado durante un control de rutina',
+        'Otro',
+        'No recuerda'
+      ],
+
+      // Pregunta 6: Tiempo hasta buscar atención médica
+      'R': [
+        'El mismo día',
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No recuerda'
+      ],
+
+      // Pregunta 7: Tiempo hasta la primera consulta médica
+      'S': [
+        'El mismo día',
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No recuerda'
+      ],
+
+      // Pregunta 8: Tipo de establecimiento
+      'T': ['Público', 'Privado', 'No recuerdo'],
+
+      // Pregunta 9: Solicitud de exámenes
+      'U': ['Sí', 'No', 'No recuerdo'],
+
+      // Pregunta 10: Exámenes solicitados
+      'V': [
+        'Mamografía',
+        'Ecografía mamaria',
+        'Mamografía y ecografía',
+        'Resonancia magnética',
+        'Otro',
+        'No recuerdo'
+      ],
+
+      // Pregunta 11: Tiempo hasta realizar examen
+      'W': [
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No corresponde'
+      ],
+
+      // Pregunta 12: Tiempo hasta resultado de examen
+      'X': [
+        'El mismo día',
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No corresponde'
+      ],
+
+      // Pregunta 13: Dificultad exámenes
+      'Y': ['Sí', 'No', 'No recuerdo'],
+
+      // Pregunta 14: Principal dificultad
+      'Z': [
+        'No había citas disponibles',
+        'La cita estaba disponible después de mucho tiempo',
+        'No había equipos disponibles',
+        'No había personal especializado',
+        'Problemas con el seguro o autorización',
+        'Tuve que pagar el examen',
+        'El establecimiento estaba lejos',
+        'Otra',
+        'No corresponde'
+      ],
+
+      // Pregunta 15: Derivaron a otro establecimiento
+      'AA': ['Sí', 'No', 'No recuerdo'],
+
+      // Pregunta 16: Tiempo atención derivación
+      'AB': [
+        'Hasta 7 días',
+        'Hasta 15 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No corresponde'
+      ],
+
+      // Pregunta 17: Cambio de sistema
+      'AC': [
+        'Público → Privado',
+        'Privado → Público',
+        'No',
+        'No recuerdo'
+      ],
+
+      // Pregunta 18: Indicaron biopsia
+      'AD': ['Sí', 'No', 'No recuerdo'],
+
+      // Pregunta 19: Tiempo hasta biopsia
+      'AE': [
+        'Hasta 7 días',
+        'Hasta 15 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No corresponde'
+      ],
+
+      // Pregunta 20: Tiempo resultado biopsia
+      'AF': [
+        'Hasta 7 días',
+        'Hasta 15 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No corresponde'
+      ],
+
+      // Pregunta 21: Establecimiento biopsia
+      'AG': ['Público', 'Privado', 'En ambos', 'No recuerdo'],
+
+      // Pregunta 22: Informaron subtipo
+      'AH': ['Sí', 'No', 'No recuerdo'],
+
+      // Pregunta 23: Subtipo informado
+      'AI': [
+        'Luminal A/B u hormonal',
+        'HER2 positivo',
+        'Triple negativo',
+        'No me lo informaron'
+      ],
+
+      // Pregunta 24: Estadio detectado
+      'AJ': [
+        'Estadio I',
+        'Estadio II',
+        'Estadio III',
+        'Estadio IV',
+        'No me informaron'
+      ],
+
+      // Pregunta 25: Tiempo estudios estadio
+      'AK': [
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No recuerdo',
+        'No corresponde'
+      ],
+
+      // Pregunta 26: Estadio diferente al inicio
+      'AL': [
+        'Sí',
+        'No',
+        'No recuerdo',
+        'Todavía no he iniciado tratamiento'
+      ],
+
+      // Pregunta 27: Estadio al inicio tratamiento
+      'AM': [
+        'Estadio I',
+        'Estadio II',
+        'Estadio III',
+        'Estadio IV',
+        'No me informaron',
+        'No corresponde'
+      ],
+
+      // Pregunta 28: Tratamiento inicial
+      'AN': [
+        'Cirugía',
+        'Quimioterapia',
+        'Radioterapia',
+        'Terapia hormonal',
+        'Terapia dirigida',
+        'Inmunoterapia',
+        'Combinación de tratamientos',
+        'Otro',
+        'No recuerdo'
+      ],
+
+      // Pregunta 29: Tiempo confirmación a indicación tratamiento
+      'AO': [
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'No recuerdo'
+      ],
+
+      // Pregunta 30: Tiempo indicación a inicio tratamiento
+      'AP': [
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'Todavía no lo he iniciado',
+        'No recuerdo'
+      ],
+
+      // Pregunta 31: Lugar inicio tratamiento
+      'AQ': [
+        'Público',
+        'Privado',
+        'En ambos',
+        'Todavía no lo he iniciado',
+        'No recuerdo'
+      ],
+
+      // Pregunta 32: Etapa con mayor espera
+      'AR': [
+        'Primera consulta',
+        'Exámenes',
+        'Biopsia',
+        'Resultado de la biopsia',
+        'Estudios para determinar el estadio',
+        'Indicación del tratamiento',
+        'Inicio del tratamiento',
+        'No tuve una espera importante',
+        'No recuerdo'
+      ],
+
+      // Pregunta 33: Principal dificultad
+      'AS': [
+        'Conseguir una cita',
+        'Conseguir una derivación',
+        'Realizar los exámenes',
+        'Acceder a la biopsia',
+        'Esperar los resultados',
+        'Obtener autorizaciones',
+        'Acceder al tratamiento o medicamentos',
+        'Costo',
+        'Distancia o traslado',
+        'No tuve dificultades',
+        'Otra'
+      ],
+
+      // Pregunta 34: Acudió a sector privado por rapidez
+      'AT': ['Sí', 'No', 'No recuerdo'],
+
+      // Pregunta 35: Retraso en tratamiento por demoras
+      'AU': ['Sí', 'No', 'No estoy segura', 'Todavía no inicio tratamiento'],
+
+      // Pregunta 36: Tiempo total recorrido
+      'AV': [
+        'Hasta 7 días',
+        'Hasta 30 días',
+        'Hasta 3 meses',
+        'Hasta 6 meses',
+        'Más de 6 meses',
+        'Todavía no lo he iniciado',
+        'No recuerdo'
+      ],
+
+      // Pregunta 37: Información clara siguiente paso
+      'AW': ['Siempre', 'Casi siempre', 'Algunas veces', 'Pocas veces', 'Nunca', 'No recuerdo'],
+
+      // Pregunta 38: Tratamiento innovador no cubierto
+      'AX': ['Siempre', 'Casi siempre', 'Algunas veces', 'Nunca']
+    };
+
+    /**
+     * Normaliza respuestas de data histórica para que no se dupliquen o mezclen
+     */
+    function normalizeAnswer(col, rawAns) {
+      if (!rawAns || rawAns === 'Sin respuesta' || rawAns === 'No respondió' || String(rawAns).trim() === '') {
+        return 'No respondió';
+      }
+
+      let ans = String(rawAns).trim();
+
+      // Limpieza de caracteres mal codificados UTF-8
+      ans = ans.replace(/SÃ­/g, 'Sí')
+               .replace(/â€“/g, '–')
+               .replace(/â†’/g, '→')
+               .replace(/Â¿/g, '¿')
+               .replace(/Ã¡/g, 'á')
+               .replace(/Ã©/g, 'é')
+               .replace(/Ã­/g, 'í')
+               .replace(/Ã³/g, 'ó')
+               .replace(/Ãº/g, 'ú')
+               .replace(/Ã±/g, 'ñ');
+
+      // Normalizaciones por columna
+      
+      // Unificación Opción A: tiempos prolongados agrupados en 'Más de 6 meses'
+      if (ans === 'Más de 9 meses' || ans === 'Más de 1 año') {
+        return 'Más de 6 meses';
+      }
+
+      switch (col) {
+        case 'N': // Derivada a Lima
+          if (ans === 'Sí me derivaron a Lima') return 'Sí';
+          if (ans === 'No me derivaron a Lima') return 'No';
+          break;
+
+        case 'P': // Q4 Tiempo espera Lima
+          if (ans === 'Menos de 7 días' || ans === 'Menos de 1 semana') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === '1–2 semanas') return 'Hasta 15 días';
+          if (ans === 'Hasta 30 días' || ans === '3–4 semanas' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '2-3 meses' || ans === '2–3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '4 a 6 meses' || ans === '4–6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'Q': // Q5 Detección inicial (respuestas cruzadas de exámenes)
+          if (ans === 'Mamografía y ecografía' || ans === 'Mamografía' || ans === 'Ecografía mamaria' || ans === 'Resonancia magnética') {
+            return 'Una mamografía detectó una alteración';
+          }
+          break;
+
+        case 'R': // Q6 Tiempo búsqueda atención
+          if (ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 15 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 30 días' || ans === '8–30 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '1-3 meses' || ans === '2-3 meses' || ans === '2–3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '3-6 meses' || ans === '4 a 6 meses' || ans === '4–6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'S': // Q7 Tiempo primera consulta
+          if (ans === 'Menos de 7 días' || ans === '1–7 días' || ans === 'Hasta 7 días' || ans === 'Hasta 15 días') return 'Hasta 7 días';
+          if (ans === '8–30 días' || ans === 'Hasta 30 días' || ans === 'Hasta 60 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'V': // Q10 Exámenes
+          if (ans === 'Notó un cambio en la mama, piel o pezón') return 'Otro';
+          break;
+
+        case 'W': // Q11 Tiempo realizar examen
+          if (ans === 'Menos de 1 semana' || ans === 'Hasta 7 días' || ans === '1–7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === 'Hasta 30 días' || ans === 'Hasta 60 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'X': // Q12 Tiempo resultado examen
+          if (ans === 'Hasta 7 días' || ans === '1–7 días' || ans === 'Menos de 1 semana') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === 'Hasta 30 días' || ans === 'Hasta 60 días' || ans === '8–30 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'AB': // Q16 Tiempo tras derivación
+          if (ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === '1–2 semanas') return 'Hasta 15 días';
+          if (ans === 'Hasta 30 días' || ans === '3–4 semanas' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'AE': // Q19 Tiempo biopsia
+          if (ans === 'Sí') return 'No respondió';
+          if (ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === '1–2 semanas') return 'Hasta 15 días';
+          if (ans === 'Hasta 30 días' || ans === 'Hasta 60 días' || ans === '3–4 semanas' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'AF': // Q20 Tiempo resultado biopsia
+          if (ans === 'Menos de 7 días' || ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === '1–2 semanas') return 'Hasta 15 días';
+          if (ans === 'Hasta 30 días' || ans === 'Hasta 60 días' || ans === '3–4 semanas' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'AG': // Q21 Establecimiento biopsia
+          if (ans === 'Más de 1 año') return 'No recuerdo';
+          break;
+
+        case 'AI': // Q23 Subtipo informado
+          if (ans === 'No me informaron') return 'No me lo informaron';
+          break;
+
+        case 'AK': // Q25 Tiempo estudios estadio
+          if (ans === 'Estadio I' || ans === 'Estadio II') return 'No recuerdo';
+          if (ans === 'No me informaron') return 'No recuerdo';
+          if (ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === 'Hasta 30 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'AO': // Q29 Tiempo confirmación a indicación
+          if (ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === 'Hasta 30 días' || ans === 'Más de 30 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 60 días' || ans === 'Más de 60 días' || ans === 'Hasta 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'AP': // Q30 Tiempo indicación a inicio
+          if (ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Hasta 15 días' || ans === 'Hasta 30 días' || ans === 'Más de 30 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Más de 60 días' || ans === 'Hasta 90 días' || ans === 'Más de 90 días' || ans === '1–3 meses' || ans === '2–3 meses' || ans === '2-3 meses' || ans === 'Hasta 3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '4–6 meses' || ans === '4 a 6 meses') return 'Hasta 6 meses';
+          if (ans === 'Más de 6 meses') return 'Más de 6 meses';
+          break;
+
+        case 'AR': // Q32 Etapa con mayor espera
+          if (ans === 'Entre la sospecha y la confirmación del diagnóstico') return 'Exámenes';
+          if (ans === 'Realización de la Biopsia') return 'Biopsia';
+          break;
+
+        case 'AL': // Q26 Estadio diferente al inicio
+          if (ans === 'No me informaron') return 'No recuerdo';
+          if (ans === 'Todavía no inicio tratamiento') return 'Todavía no he iniciado tratamiento';
+          break;
+
+        case 'AV': // Q36 Tiempo total recorrido
+          if (ans === 'Menos de 1 semana' || ans === '1–7 días' || ans === 'Hasta 7 días') return 'Hasta 7 días';
+          if (ans === 'Menos de 1 mes' || ans === 'Hasta 30 días' || ans === '1–4 semanas') return 'Hasta 30 días';
+          if (ans === 'Hasta 3 meses' || ans === '1–3 meses' || ans === '1-3 meses' || ans === '2-3 meses' || ans === '2–3 meses') return 'Hasta 3 meses';
+          if (ans === 'Hasta 6 meses' || ans === '3–6 meses' || ans === '3-6 meses' || ans === '4 a 6 meses' || ans === '4–6 meses') return 'Hasta 6 meses';
+          if (ans === 'Hasta 9 meses' || ans === 'Hasta 1 año' || ans === '6–12 meses' || ans === 'Más de 6 meses') return 'Más de 6 meses';
+          if (ans === 'Todavía no inicio tratamiento') return 'Todavía no lo he iniciado';
+          break;
+
+        case 'AW': // Q37 Información clara
+          if (ans === 'Si') return 'Siempre';
+          if (ans === 'No') return 'Nunca';
+          break;
+
+        case 'AX': // Q38 Tratamiento innovador
+          if (ans === 'Sí') return 'Siempre';
+          break;
+      }
+
+      return ans;
+    }
+
     function getFilteredRecords() {
+      const sSector = document.getElementById('f-sector') ? document.getElementById('f-sector').value : 'ALL';
       const sSystem = document.getElementById('f-system') ? document.getElementById('f-system').value : 'ALL';
       const sRegion = document.getElementById('f-region') ? document.getElementById('f-region').value : 'ALL';
 
       return DATA.records.filter(r => {
+        // Sector: Privado (Seguro Privado, Particular) vs Público (Minsa, EsSalud, FFAA, etc.)
+        if (sSector === 'PRIVATE') {
+          if (r.J !== 'Seguro Privado' && r.J !== 'Particular') return false;
+        } else if (sSector === 'PUBLIC') {
+          if (r.J === 'Seguro Privado' || r.J === 'Particular') return false;
+        }
+
         if (sSystem !== 'ALL' && r.J !== sSystem) return false;
         if (sRegion === 'LIMA' && r.H !== 'Lima') return false;
         if (sRegion === 'PROV' && r.H === 'Lima') return false;
@@ -18,6 +526,7 @@ const charts = {};
     }
 
     function updateActiveFilterChips(records) {
+      const sSector = document.getElementById('f-sector');
       const sSystem = document.getElementById('f-system');
       const sRegion = document.getElementById('f-region');
       const sSearch = document.getElementById('f-search');
@@ -33,6 +542,13 @@ const charts = {};
 
       const activeList = [];
 
+      if (sSector && sSector.value !== 'ALL') {
+        const sectorTxt = sSector.options[sSector.selectedIndex].text.split('(')[0].trim();
+        activeList.push({
+          label: `Sector: ${sectorTxt}`,
+          clear: () => { sSector.value = 'ALL'; renderDashboard(); }
+        });
+      }
       if (sSystem && sSystem.value !== 'ALL') {
         activeList.push({
           label: `Sistema: ${sSystem.value}`,
@@ -54,7 +570,7 @@ const charts = {};
       }
       if (sShowNA.checked) {
         activeList.push({
-          label: 'Con "Sin respuesta" en gráficas',
+          label: 'Con "No respondió" en gráficas',
           clear: () => { sShowNA.checked = false; renderDashboard(); }
         });
       }
@@ -82,13 +598,8 @@ const charts = {};
 
     function updateKPIs(records) {
       const total = records.length;
-      const validQ = records.filter(r => r.Q !== 'Sin respuesta').length;
       const bultoC = records.filter(r => r.Q === 'Encontró un bulto o nódulo').length;
-
-      const validAT = records.filter(r => r.AT !== 'Sin respuesta').length;
       const privC = records.filter(r => r.AT === 'Sí').length;
-
-      const validAU = records.filter(r => r.AU !== 'Sin respuesta').length;
       const retC = records.filter(r => r.AU === 'Sí').length;
 
       const elTotal = document.getElementById('kpi-total');
@@ -100,13 +611,22 @@ const charts = {};
       }
 
       const elBulto = document.getElementById('kpi-bulto');
-      if (elBulto) elBulto.textContent = validQ ? (bultoC / validQ * 100).toFixed(1) + '%' : '0%';
+      if (elBulto) elBulto.textContent = total ? (bultoC / total * 100).toFixed(1) + '%' : '0%';
+
+      const elBultoSub = document.getElementById('kpi-bulto-sub');
+      if (elBultoSub) elBultoSub.textContent = `${bultoC} de ${total} encuestadas`;
 
       const elPrivado = document.getElementById('kpi-privado');
-      if (elPrivado) elPrivado.textContent = validAT ? (privC / validAT * 100).toFixed(1) + '%' : '0%';
+      if (elPrivado) elPrivado.textContent = total ? (privC / total * 100).toFixed(1) + '%' : '0%';
+
+      const elPrivadoSub = document.getElementById('kpi-privado-sub');
+      if (elPrivadoSub) elPrivadoSub.textContent = `${privC} de ${total} encuestadas`;
 
       const elRetraso = document.getElementById('kpi-retraso');
-      if (elRetraso) elRetraso.textContent = validAU ? (retC / validAU * 100).toFixed(1) + '%' : '0%';
+      if (elRetraso) elRetraso.textContent = total ? (retC / total * 100).toFixed(1) + '%' : '0%';
+
+      const elRetrasoSub = document.getElementById('kpi-retraso-sub');
+      if (elRetrasoSub) elRetrasoSub.textContent = `${retC} de ${total} encuestadas`;
     }
 
     function renderDashboard() {
@@ -193,15 +713,20 @@ const charts = {};
           });
           sideNav.appendChild(link);
 
-          // Tally responses
+          // Tally responses con normalización de respuestas sobre la totalidad de personas
           const counts = {};
           let validCount = 0;
           let naCount = 0;
 
           records.forEach(r => {
-            const ans = r[q.col] || 'Sin respuesta';
-            if (ans === 'Sin respuesta') naCount++;
-            else validCount++;
+            let ans = r[q.col];
+            ans = normalizeAnswer(q.col, ans);
+
+            if (ans === 'No respondió' || ans === 'No corresponde') {
+              naCount++;
+            } else {
+              validCount++;
+            }
 
             if (!counts[ans]) {
               counts[ans] = { total: 0 };
@@ -209,15 +734,50 @@ const charts = {};
             counts[ans].total++;
           });
 
+          // Ordenamiento: si la pregunta tiene orden canónico, respetar ese orden
+          const canonicalOrder = QUESTION_CANONICAL_ORDER[q.col] || null;
+
+          // Asegurar que TODAS las opciones oficiales siempre existan correlativamente (con 0 si no fueron seleccionadas)
+          if (canonicalOrder) {
+            canonicalOrder.forEach(opt => {
+              if (opt !== 'No corresponde' && opt !== 'No respondió' && !counts[opt]) {
+                counts[opt] = { total: 0 };
+              }
+            });
+          }
+
           const entries = Object.entries(counts).sort((a, b) => {
-            if (a[0] === 'Sin respuesta') return 1;
-            if (b[0] === 'Sin respuesta') return -1;
+            const labelA = a[0];
+            const labelB = b[0];
+
+            // Siempre dejar 'No corresponde', 'No respondió' y 'No recuerdo' al final
+            if (labelA === 'No corresponde') return 1;
+            if (labelB === 'No corresponde') return -1;
+            if (labelA === 'No respondió') return 1;
+            if (labelB === 'No respondió') return -1;
+            if (labelA === 'No recuerdo' && labelB !== 'No respondió' && labelB !== 'No corresponde') return 1;
+            if (labelB === 'No recuerdo' && labelA !== 'No respondió' && labelA !== 'No corresponde') return -1;
+
+            if (canonicalOrder) {
+              const idxA = canonicalOrder.indexOf(labelA);
+              const idxB = canonicalOrder.indexOf(labelB);
+
+              // Si ambas están en el catálogo oficial
+              if (idxA !== -1 && idxB !== -1) {
+                return idxA - idxB;
+              }
+              // Si solo una está en el catálogo, priorizar la catalogada
+              if (idxA !== -1) return -1;
+              if (idxB !== -1) return 1;
+            }
+
+            // Fallback: ordenar por cantidad de mayor a menor
             return b[1].total - a[1].total;
           });
 
           const chartEntries = showNAInChart
             ? entries
-            : entries.filter(e => e[0] !== 'Sin respuesta');
+            : entries.filter(e => e[0] !== 'No respondió' && e[0] !== 'Sin respuesta' && e[0] !== 'No corresponde');
 
           const isMobile = window.innerWidth <= 768;
           const isDoughnut = q.chartType === 'doughnut' && chartEntries.length <= 5;
@@ -225,11 +785,13 @@ const charts = {};
             ? (isMobile ? 260 : 290) 
             : Math.max(isMobile ? 240 : 270, chartEntries.length * (isMobile ? 34 : 38) + 60);
 
+          const cardUniverseTotal = records.length;
+
           const tableRows = entries.map(([ans, st]) => {
-            const isNA = ans === 'Sin respuesta';
-            const pctTotal = records.length ? ((st.total / records.length) * 100).toFixed(1) : '0.0';
+            const isNA = ans === 'No respondió' || ans === 'Sin respuesta' || ans === 'No corresponde';
+            const pctTotal = cardUniverseTotal ? ((st.total / cardUniverseTotal) * 100).toFixed(1) : '0.0';
             const pctValid = (!isNA && validCount) ? ((st.total / validCount) * 100).toFixed(1) + '%' : '—';
-            const wBar = records.length ? (st.total / records.length * 100).toFixed(1) : 0;
+            const wBar = cardUniverseTotal ? (st.total / cardUniverseTotal * 100).toFixed(1) : 0;
 
             return `
               <tr class="${isNA ? 'na-row' : ''}">
@@ -254,8 +816,8 @@ const charts = {};
               <div>
                 <div class="q-badges">
                   <span class="tag-primary">${q.code}</span>
-                  <span class="tag-neutral">Respondieron: ${validCount} personas (${records.length ? (validCount/records.length*100).toFixed(1) : 0}%)</span>
-                  ${naCount > 0 ? `<span class="tag-na">Sin respuesta / No aplica: ${naCount} personas</span>` : ''}
+                  <span class="tag-neutral">Total Encuestadas: ${cardUniverseTotal} personas</span>
+                  <span class="tag-neutral" style="background:#f8fafc; border:1px solid #e2e8f0;">${CONDITIONAL_QUESTION_COLS.has(q.col) ? 'Derivada:' : 'Respondieron:'} ${validCount} (${cardUniverseTotal ? (validCount/cardUniverseTotal*100).toFixed(1) : 0}%)</span>
                 </div>
                 <div class="q-title">${q.title}</div>
                 <div class="q-sub">${q.subtitle}</div>
@@ -271,7 +833,7 @@ const charts = {};
                     <tr>
                       <th class="col-main">Opción de Respuesta</th>
                       <th class="num col-count">Personas</th>
-                      <th class="num col-pct">% Total</th>
+                      <th class="num col-pct">% Universo</th>
                       <th class="num col-extra">% Válido</th>
                       <th class="col-extra">Distribución</th>
                     </tr>
@@ -302,7 +864,7 @@ const charts = {};
                 labels,
                 datasets: [{
                   data: dTotal,
-                  backgroundColor: labels.map((l, idx) => l === 'Sin respuesta' ? '#cbd5e1' : COLORS[idx % COLORS.length]),
+                  backgroundColor: labels.map((l, idx) => (l === 'No respondió' || l === 'Sin respuesta') ? '#cbd5e1' : COLORS[idx % COLORS.length]),
                   borderWidth: 2,
                   borderColor: '#ffffff'
                 }]
@@ -323,7 +885,7 @@ const charts = {};
                     callbacks: {
                       label: function(context) {
                         const v = context.raw;
-                        const base = showNAInChart ? records.length : validCount;
+                        const base = showNAInChart ? cardUniverseTotal : validCount;
                         const pct = base ? ((v / base) * 100).toFixed(1) : 0;
                         return ` ${context.label}: ${v} personas (${pct}%)`;
                       }
@@ -341,7 +903,7 @@ const charts = {};
                   {
                     label: 'Personas',
                     data: dTotal,
-                    backgroundColor: labels.map(l => l === 'Sin respuesta' ? '#cbd5e1' : '#432682'),
+                    backgroundColor: labels.map(l => (l === 'No respondió' || l === 'Sin respuesta') ? '#cbd5e1' : '#432682'),
                     borderRadius: 4,
                     barPercentage: 0.75
                   }
@@ -382,7 +944,7 @@ const charts = {};
                     callbacks: {
                       label: function(context) {
                         const tot = context.raw;
-                        const base = showNAInChart ? records.length : validCount;
+                        const base = showNAInChart ? cardUniverseTotal : validCount;
                         const pct = base ? ((tot / base) * 100).toFixed(1) : 0;
                         return ` ${tot} personas (${pct}%)`;
                       }
@@ -445,10 +1007,12 @@ const charts = {};
     }
 
     function resetAllFilters() {
+      const sSector = document.getElementById('f-sector');
       const sSystem = document.getElementById('f-system');
       const sRegion = document.getElementById('f-region');
       const sSearch = document.getElementById('f-search');
       const sShowNA = document.getElementById('f-show-na');
+      if (sSector) sSector.value = 'ALL';
       if (sSystem) sSystem.value = 'ALL';
       if (sRegion) sRegion.value = 'ALL';
       if (sSearch) sSearch.value = '';
@@ -459,7 +1023,7 @@ const charts = {};
     function initObservatorioMetrics() {
       if (!document.getElementById('questions-root')) return;
 
-      ['f-system', 'f-region', 'f-show-na'].forEach(id => {
+      ['f-sector', 'f-system', 'f-region', 'f-show-na'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', renderDashboard);
       });
