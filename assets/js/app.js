@@ -162,7 +162,7 @@ const charts = {};
       ],
 
       // Pregunta 18: Indicaron biopsia
-      'AD': ['Sí', 'No', 'No recuerdo'],
+      'AD': ['Sí', 'No'],
 
       // Pregunta 19: Tiempo hasta biopsia
       'AE': [
