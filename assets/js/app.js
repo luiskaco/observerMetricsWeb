@@ -846,7 +846,7 @@ const charts = {};
                     <tr>
                       <th class="col-main">Opción de Respuesta</th>
                       <th class="num col-count">Personas</th>
-                      <th class="num col-pct">% Universo</th>
+                      <th class="num col-pct">${isDerivadaSub ? '% Derivado' : '% Universo'}</th>
                       <th class="num col-extra">% Válido</th>
                       <th class="col-extra">Distribución</th>
                     </tr>
@@ -898,7 +898,7 @@ const charts = {};
                     callbacks: {
                       label: function(context) {
                         const v = context.raw;
-                        const base = showNAInChart ? cardUniverseTotal : validCount;
+                        const base = isDerivadaSub ? cardUniverseTotal : (showNAInChart ? cardUniverseTotal : validCount);
                         const pct = base ? ((v / base) * 100).toFixed(1) : 0;
                         return ` ${context.label}: ${v} personas (${pct}%)`;
                       }
@@ -957,7 +957,7 @@ const charts = {};
                     callbacks: {
                       label: function(context) {
                         const tot = context.raw;
-                        const base = showNAInChart ? cardUniverseTotal : validCount;
+                        const base = isDerivadaSub ? cardUniverseTotal : (showNAInChart ? cardUniverseTotal : validCount);
                         const pct = base ? ((tot / base) * 100).toFixed(1) : 0;
                         return ` ${tot} personas (${pct}%)`;
                       }
