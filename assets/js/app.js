@@ -336,6 +336,7 @@ const charts = {};
       if (!rawAns || rawAns === 'Sin respuesta' || rawAns === 'No respondió' || String(rawAns).trim() === '') {
         if (col === 'R' || col === 'Q') return 'No recuerda';
         if (col === 'AJ') return 'No me informaron';
+        if (col === 'AS') return 'Otra';
         return 'No respondió';
       }
 
