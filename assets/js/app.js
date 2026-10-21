@@ -9,15 +9,15 @@ const charts = {};
     // Nota: La pregunta 2 (Col 'N') es padre/directa, por lo que no lleva 'Derivada:'
         // Reglas de preguntas condicionadas (derivadas de una pregunta o subconjunto previo)
     const CONDITIONAL_RULES = {
-      'O': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas' },
-      'P': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas' },
-      'Z': { filter: r => r.Z !== 'No corresponde', badge: 'Total Derivadas' },
-      'AB': { filter: r => r.AB !== 'No corresponde', badge: 'Total Derivadas' },
-      'AC': { filter: r => r.AC !== 'No respondió' && r.AC !== 'No corresponde', badge: 'Total Derivadas' },
-      'AE': { filter: r => r.AE !== 'No corresponde' && r.AE !== 'No respondió', badge: 'Total Derivadas' },
-      'AF': { filter: r => r.AF !== 'No corresponde', badge: 'Total Derivadas' },
-      'AK': { filter: r => r.AK !== 'No corresponde', badge: 'Total Derivadas' },
-      'AM': { filter: r => r.AM !== 'No corresponde', badge: 'Total Derivadas' }
+      'O': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivados' },
+      'P': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivados' },
+      'Z': { filter: r => r.Z !== 'No corresponde', badge: 'Total Derivados' },
+      'AB': { filter: r => r.AB !== 'No corresponde', badge: 'Total Derivados' },
+      'AC': { filter: r => r.AC !== 'No respondió' && r.AC !== 'No corresponde', badge: 'Total Derivados' },
+      'AE': { filter: r => r.AE !== 'No corresponde' && r.AE !== 'No respondió', badge: 'Total Derivados' },
+      'AF': { filter: r => r.AF !== 'No corresponde', badge: 'Total Derivados' },
+      'AK': { filter: r => r.AK !== 'No corresponde', badge: 'Total Derivados' },
+      'AM': { filter: r => r.AM !== 'No corresponde', badge: 'Total Derivados' }
     };
 
     const CONDITIONAL_QUESTION_COLS = new Set(['O', 'P', 'V', 'W', 'X', 'Y', 'Z', 'AB', 'AC', 'AE', 'AF', 'AG', 'AI', 'AK', 'AM']);
@@ -623,19 +623,19 @@ const charts = {};
       if (elBulto) elBulto.textContent = total ? (bultoC / total * 100).toFixed(1) + '%' : '0%';
 
       const elBultoSub = document.getElementById('kpi-bulto-sub');
-      if (elBultoSub) elBultoSub.textContent = `${bultoC} de ${total} encuestadas`;
+      if (elBultoSub) elBultoSub.textContent = `${bultoC} de ${total} encuestados`;
 
       const elPrivado = document.getElementById('kpi-privado');
       if (elPrivado) elPrivado.textContent = total ? (privC / total * 100).toFixed(1) + '%' : '0%';
 
       const elPrivadoSub = document.getElementById('kpi-privado-sub');
-      if (elPrivadoSub) elPrivadoSub.textContent = `${privC} de ${total} encuestadas`;
+      if (elPrivadoSub) elPrivadoSub.textContent = `${privC} de ${total} encuestados`;
 
       const elRetraso = document.getElementById('kpi-retraso');
       if (elRetraso) elRetraso.textContent = total ? (retC / total * 100).toFixed(1) + '%' : '0%';
 
       const elRetrasoSub = document.getElementById('kpi-retraso-sub');
-      if (elRetrasoSub) elRetrasoSub.textContent = `${retC} de ${total} encuestadas`;
+      if (elRetrasoSub) elRetrasoSub.textContent = `${retC} de ${total} encuestados`;
     }
 
     function renderDashboard() {
@@ -810,7 +810,7 @@ const charts = {};
             : Math.max(isMobile ? 240 : 270, chartEntries.length * (isMobile ? 34 : 38) + 60);
 
           const cardUniverseTotal = isConditional ? validCount : evalRecords.length;
-          const badgeLabel = isConditional ? condRule.badge : 'Total Encuestadas';
+          const badgeLabel = isConditional ? condRule.badge : 'Total Encuestados';
 
           const tableRows = entries.map(([ans, st]) => {
             const isNA = ans === 'No respondió' || ans === 'Sin respuesta' || ans === 'No corresponde';
