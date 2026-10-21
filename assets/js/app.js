@@ -805,7 +805,7 @@ const charts = {};
             ? (isMobile ? 260 : 290) 
             : Math.max(isMobile ? 240 : 270, chartEntries.length * (isMobile ? 34 : 38) + 60);
 
-          const cardUniverseTotal = evalRecords.length;
+          const cardUniverseTotal = isConditional ? validCount : evalRecords.length;
           const badgeLabel = isConditional ? condRule.badge : 'Total Encuestadas';
 
           const tableRows = entries.map(([ans, st]) => {
