@@ -65,7 +65,7 @@ const charts = {};
         'Otro examen detectó una alteración',
         'Fue detectado durante un control de rutina',
         'Otro',
-        'No recuerda'
+        'No recuerdo'
       ],
 
       // Pregunta 6: Tiempo hasta buscar atención médica
@@ -76,7 +76,7 @@ const charts = {};
         'Hasta 3 meses',
         'Hasta 6 meses',
         'Más de 6 meses',
-        'No recuerda'
+        'No recuerdo'
       ],
 
       // Pregunta 7: Tiempo hasta la primera consulta médica
@@ -87,7 +87,7 @@ const charts = {};
         'Hasta 3 meses',
         'Hasta 6 meses',
         'Más de 6 meses',
-        'No recuerda'
+        'No recuerdo'
       ],
 
       // Pregunta 8: Tipo de establecimiento
