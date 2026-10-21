@@ -9,8 +9,8 @@ const charts = {};
     // Nota: La pregunta 2 (Col 'N') es padre/directa, por lo que no lleva 'Derivada:'
         // Reglas de preguntas condicionadas (derivadas de una pregunta o subconjunto previo)
     const CONDITIONAL_RULES = {
-      'O': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas a Lima' },
-      'P': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas a Lima' },
+      'O': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas' },
+      'P': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas' },
       'Z': { filter: r => r.Z !== 'No corresponde', badge: 'Total Derivadas' },
       'AB': { filter: r => r.AB !== 'No corresponde', badge: 'Total Derivadas' },
       'AC': { filter: r => r.AC !== 'No respondió' && r.AC !== 'No corresponde', badge: 'Total Derivadas' },
