@@ -3,7 +3,7 @@
  * Plugin Name: Observatorio Métricas - Encuesta Cáncer de Mama
  * Plugin URI:  https://observatoriodecancer.pe
  * Description: Dashboard interactivo de resultados y métricas de la Encuesta Viaje de la Paciente con Cáncer de Mama (Chart.js, filtros por sistema de salud y región con importador Excel en WP Admin).
- * Version:     1.7.1
+ * Version:     1.7.2
  * Author:      Observatorio de Cáncer
  * Text Domain: observatorio-metricas
  * License:     GPL-2.0+
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'OBS_METRICS_VERSION', '1.7.1' );
+define( 'OBS_METRICS_VERSION', '1.7.2' );
 define( 'OBS_METRICS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OBS_METRICS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
