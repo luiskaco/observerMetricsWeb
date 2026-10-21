@@ -7,6 +7,19 @@ const charts = {};
 
     // Lista de columnas que corresponden a preguntas condicionadas (dependen de una pregunta previa)
     // Nota: La pregunta 2 (Col 'N') es padre/directa, por lo que no lleva 'Derivada:'
+        // Reglas de preguntas condicionadas (derivadas de una pregunta o subconjunto previo)
+    const CONDITIONAL_RULES = {
+      'O': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas a Lima' },
+      'P': { filter: r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima', badge: 'Total Derivadas a Lima' },
+      'Z': { filter: r => r.Z !== 'No corresponde', badge: 'Total Derivadas' },
+      'AB': { filter: r => r.AB !== 'No corresponde', badge: 'Total Derivadas' },
+      'AC': { filter: r => r.AC !== 'No respondió' && r.AC !== 'No corresponde', badge: 'Total Derivadas' },
+      'AE': { filter: r => r.AE !== 'No corresponde', badge: 'Total Derivadas' },
+      'AF': { filter: r => r.AF !== 'No corresponde', badge: 'Total Derivadas' },
+      'AK': { filter: r => r.AK !== 'No corresponde', badge: 'Total Derivadas' },
+      'AM': { filter: r => r.AM !== 'No corresponde', badge: 'Total Derivadas' }
+    };
+
     const CONDITIONAL_QUESTION_COLS = new Set(['O', 'P', 'V', 'W', 'X', 'Y', 'Z', 'AB', 'AC', 'AE', 'AF', 'AG', 'AI', 'AK', 'AM']);
 
     // Catálogo de orden canónico oficial por columna (para no ordenar por cantidad de datos)
@@ -100,8 +113,7 @@ const charts = {};
         'Hasta 3 meses',
         'Hasta 6 meses',
         'Más de 6 meses',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 12: Tiempo hasta resultado de examen
       'X': [
@@ -111,8 +123,7 @@ const charts = {};
         'Hasta 3 meses',
         'Hasta 6 meses',
         'Más de 6 meses',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 13: Dificultad exámenes
       'Y': ['Sí', 'No', 'No recuerdo'],
@@ -127,8 +138,7 @@ const charts = {};
         'Tuve que pagar el examen',
         'El establecimiento estaba lejos',
         'Otra',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 15: Derivaron a otro establecimiento
       'AA': ['Sí', 'No', 'No recuerdo'],
@@ -141,8 +151,7 @@ const charts = {};
         'Hasta 3 meses',
         'Hasta 6 meses',
         'Más de 6 meses',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 17: Cambio de sistema
       'AC': [
@@ -163,8 +172,7 @@ const charts = {};
         'Hasta 3 meses',
         'Hasta 6 meses',
         'Más de 6 meses',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 20: Tiempo resultado biopsia
       'AF': [
@@ -174,8 +182,7 @@ const charts = {};
         'Hasta 3 meses',
         'Hasta 6 meses',
         'Más de 6 meses',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 21: Establecimiento biopsia
       'AG': ['Público', 'Privado', 'En ambos', 'No recuerdo'],
@@ -208,8 +215,7 @@ const charts = {};
         'Hasta 6 meses',
         'Más de 6 meses',
         'No recuerdo',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 26: Estadio diferente al inicio
       'AL': [
@@ -226,8 +232,7 @@ const charts = {};
         'Estadio III',
         'Estadio IV',
         'No me informaron',
-        'No corresponde'
-      ],
+        ],
 
       // Pregunta 28: Tratamiento inicial
       'AN': [
@@ -719,10 +724,11 @@ const charts = {};
           let validCount = 0;
           let naCount = 0;
 
-          // Para Preguntas 3 y 4 (O y P), evaluar exclusivamente sobre las personas derivadas a Lima
-          const isDerivadaSub = (q.col === 'O' || q.col === 'P');
-          const evalRecords = isDerivadaSub
-            ? records.filter(r => r.N === 'Sí' || r.N === 'Sí me derivaron a Lima')
+          // Para preguntas condicionadas (derivadas), evaluar sobre su base aplicable
+          const condRule = CONDITIONAL_RULES[q.col] || null;
+          const isConditional = Boolean(condRule);
+          const evalRecords = isConditional
+            ? records.filter(condRule.filter)
             : records;
 
           evalRecords.forEach(r => {
@@ -730,8 +736,8 @@ const charts = {};
             let ans = (q.col === 'M') ? r.H : r[q.col];
             ans = normalizeAnswer(q.col, ans);
 
-            // En Pregunta 3 y 4, no añadir el item 'No corresponde'
-            if (isDerivadaSub && ans === 'No corresponde') {
+            // En preguntas condicionadas, no añadir el item 'No corresponde' ni respuestas no aplicables
+            if (isConditional && (ans === 'No corresponde' || (q.col === 'AC' && ans === 'No respondió'))) {
               naCount++;
               return;
             }
@@ -799,7 +805,8 @@ const charts = {};
             ? (isMobile ? 260 : 290) 
             : Math.max(isMobile ? 240 : 270, chartEntries.length * (isMobile ? 34 : 38) + 60);
 
-          const cardUniverseTotal = isDerivadaSub ? evalRecords.length : records.length;
+          const cardUniverseTotal = evalRecords.length;
+          const badgeLabel = isConditional ? condRule.badge : 'Total Encuestadas';
 
           const tableRows = entries.map(([ans, st]) => {
             const isNA = ans === 'No respondió' || ans === 'Sin respuesta' || ans === 'No corresponde';
@@ -830,7 +837,7 @@ const charts = {};
               <div>
                 <div class="q-badges">
                   <span class="tag-primary">${q.code}</span>
-                  <span class="tag-neutral">${isDerivadaSub ? 'Total Derivadas a Lima' : 'Total Encuestadas'}: ${cardUniverseTotal} personas</span>
+                  <span class="tag-neutral">${badgeLabel}: ${cardUniverseTotal} personas</span>
                 </div>
                 <div class="q-title">${q.title}</div>
                 <div class="q-sub">${q.subtitle}</div>
@@ -846,7 +853,7 @@ const charts = {};
                     <tr>
                       <th class="col-main">Opción de Respuesta</th>
                       <th class="num col-count">Personas</th>
-                      <th class="num col-pct">${isDerivadaSub ? '% Derivado' : '% Universo'}</th>
+                      <th class="num col-pct">${isConditional ? '% Derivado' : '% Universo'}</th>
                       <th class="num col-extra">% Válido</th>
                       <th class="col-extra">Distribución</th>
                     </tr>
@@ -898,7 +905,7 @@ const charts = {};
                     callbacks: {
                       label: function(context) {
                         const v = context.raw;
-                        const base = isDerivadaSub ? cardUniverseTotal : (showNAInChart ? cardUniverseTotal : validCount);
+                        const base = isConditional ? cardUniverseTotal : (showNAInChart ? cardUniverseTotal : validCount);
                         const pct = base ? ((v / base) * 100).toFixed(1) : 0;
                         return ` ${context.label}: ${v} personas (${pct}%)`;
                       }
@@ -957,7 +964,7 @@ const charts = {};
                     callbacks: {
                       label: function(context) {
                         const tot = context.raw;
-                        const base = isDerivadaSub ? cardUniverseTotal : (showNAInChart ? cardUniverseTotal : validCount);
+                        const base = isConditional ? cardUniverseTotal : (showNAInChart ? cardUniverseTotal : validCount);
                         const pct = base ? ((tot / base) * 100).toFixed(1) : 0;
                         return ` ${tot} personas (${pct}%)`;
                       }
