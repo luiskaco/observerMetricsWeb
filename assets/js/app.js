@@ -335,6 +335,7 @@ const charts = {};
     function normalizeAnswer(col, rawAns) {
       if (!rawAns || rawAns === 'Sin respuesta' || rawAns === 'No respondió' || String(rawAns).trim() === '') {
         if (col === 'R' || col === 'Q') return 'No recuerda';
+        if (col === 'AJ') return 'No me informaron';
         return 'No respondió';
       }
 
