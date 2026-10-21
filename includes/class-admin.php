@@ -236,7 +236,7 @@ class Observatorio_Metricas_Admin {
 
             <div class="obs-admin-header">
                 <h1><?php esc_html_e( 'Métricas y Dashboard del Observatorio', 'observatorio-metricas' ); ?></h1>
-                <p><?php esc_html_e( 'Administrador de datos de la Encuesta: Viaje de la Paciente con Cáncer de Mama. Carga aquí nuevos consolidados en Excel para actualizar todas las métricas en la web.', 'observatorio-metricas' ); ?></p>
+                <p><?php esc_html_e( 'Administrador de datos de la Encuesta: La Ruta de la Paciente con Cáncer de Mama. Carga aquí nuevos consolidados en Excel para actualizar todas las métricas en la web.', 'observatorio-metricas' ); ?></p>
             </div>
 
             <!-- KPIs de Data Activa -->

@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
   <header class="hero">
     <div class="hero-inner">
-      <h1>Resultados de la Encuesta: Viaje de la Paciente con Cáncer de Mama</h1>
+      <h1>Resultados de la Encuesta: La Ruta de la Paciente con Cáncer de Mama</h1>
       <p>Análisis detallado pregunta por pregunta de la muestra consolidada de <strong>612 personas</strong> diagnosticadas con cáncer de mama en el Perú.</p>
 
       <div class="kpi-row">
