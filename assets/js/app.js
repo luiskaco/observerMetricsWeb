@@ -514,70 +514,238 @@ const charts = {};
       return ans;
     }
 
+    function getCheckedValues(name) {
+      const inputs = document.querySelectorAll(`input[name="${name}"]:checked`);
+      return Array.from(inputs).map(i => i.value);
+    }
+
+    function syncSystemsFromSector() {
+      const pubCb = document.querySelector('input[name="f-sector"][value="PUBLIC"]');
+      const privCb = document.querySelector('input[name="f-sector"][value="PRIVATE"]');
+
+      const isPub = pubCb ? pubCb.checked : false;
+      const isPriv = privCb ? privCb.checked : false;
+
+      const publicSystems = ['EsSalud', 'Minsa', 'FFAA'];
+      const privateSystems = ['Seguro Privado', 'Particular'];
+
+      if (isPub && !isPriv) {
+        publicSystems.forEach(s => {
+          const cb = document.querySelector(`input[name="f-system"][value="${s}"]`);
+          if (cb) cb.checked = true;
+        });
+        privateSystems.forEach(s => {
+          const cb = document.querySelector(`input[name="f-system"][value="${s}"]`);
+          if (cb) cb.checked = false;
+        });
+      } else if (isPriv && !isPub) {
+        privateSystems.forEach(s => {
+          const cb = document.querySelector(`input[name="f-system"][value="${s}"]`);
+          if (cb) cb.checked = true;
+        });
+        publicSystems.forEach(s => {
+          const cb = document.querySelector(`input[name="f-system"][value="${s}"]`);
+          if (cb) cb.checked = false;
+        });
+      } else if (!isPub && !isPriv) {
+        ['EsSalud', 'Minsa', 'FFAA', 'Seguro Privado', 'Particular'].forEach(s => {
+          const cb = document.querySelector(`input[name="f-system"][value="${s}"]`);
+          if (cb) cb.checked = false;
+        });
+      }
+    }
+
+    function syncSectorFromSystems() {
+      const publicSystems = ['EsSalud', 'Minsa', 'FFAA'];
+      const privateSystems = ['Seguro Privado', 'Particular'];
+
+      const pubChecked = publicSystems.filter(s => {
+        const cb = document.querySelector(`input[name="f-system"][value="${s}"]`);
+        return cb && cb.checked;
+      }).length;
+
+      const privChecked = privateSystems.filter(s => {
+        const cb = document.querySelector(`input[name="f-system"][value="${s}"]`);
+        return cb && cb.checked;
+      }).length;
+
+      const pubCb = document.querySelector('input[name="f-sector"][value="PUBLIC"]');
+      const privCb = document.querySelector('input[name="f-sector"][value="PRIVATE"]');
+
+      if (pubCb) pubCb.checked = (pubChecked === publicSystems.length);
+      if (privCb) privCb.checked = (privChecked === privateSystems.length);
+    }
+
+    function updateTriggerLabels() {
+      // Sector
+      const sectors = getCheckedValues('f-sector');
+      const txtSector = document.getElementById('txt-ms-sector');
+      const btnSector = document.getElementById('btn-ms-sector');
+      if (txtSector && btnSector) {
+        if (sectors.length === 0 || sectors.length === 2) {
+          txtSector.textContent = `Todos los Sectores (${DATA.totalCount})`;
+          btnSector.classList.remove('has-active');
+        } else if (sectors.includes('PUBLIC')) {
+          const c = DATA.records.filter(r => r.J !== 'Seguro Privado' && r.J !== 'Particular').length;
+          txtSector.textContent = `Público (${c})`;
+          btnSector.classList.add('has-active');
+        } else {
+          const c = DATA.records.filter(r => r.J === 'Seguro Privado' || r.J === 'Particular').length;
+          txtSector.textContent = `Privado (${c})`;
+          btnSector.classList.add('has-active');
+        }
+      }
+
+      // Sistema de Salud (Suma acumulativa de sistemas seleccionados)
+      const systems = getCheckedValues('f-system');
+      const txtSystem = document.getElementById('txt-ms-system');
+      const btnSystem = document.getElementById('btn-ms-system');
+      if (txtSystem && btnSystem) {
+        if (systems.length === 0 || systems.length === 5) {
+          txtSystem.textContent = `Todos los Sistemas (${DATA.totalCount})`;
+          btnSystem.classList.remove('has-active');
+        } else {
+          const c = DATA.records.filter(r => systems.includes(r.J)).length;
+          if (systems.length <= 2) {
+            txtSystem.textContent = `${systems.join(' + ')} (${c})`;
+          } else {
+            txtSystem.textContent = `${systems.length} seleccionados (${c})`;
+          }
+          btnSystem.classList.add('has-active');
+        }
+      }
+
+      // Ubicación Geográfica
+      const regions = getCheckedValues('f-region');
+      const txtRegion = document.getElementById('txt-ms-region');
+      const btnRegion = document.getElementById('btn-ms-region');
+      if (txtRegion && btnRegion) {
+        if (regions.length === 0 || regions.length === 2) {
+          txtRegion.textContent = `Todo el Perú (${DATA.totalCount})`;
+          btnRegion.classList.remove('has-active');
+        } else if (regions.includes('LIMA')) {
+          const c = DATA.records.filter(r => r.H === 'Lima').length;
+          txtRegion.textContent = `Solo Lima (${c})`;
+          btnRegion.classList.add('has-active');
+        } else {
+          const c = DATA.records.filter(r => r.H !== 'Lima').length;
+          txtRegion.textContent = `Solo Regiones (${c})`;
+          btnRegion.classList.add('has-active');
+        }
+      }
+    }
+
     function getFilteredRecords() {
-      const sSector = document.getElementById('f-sector') ? document.getElementById('f-sector').value : 'ALL';
-      const sSystem = document.getElementById('f-system') ? document.getElementById('f-system').value : 'ALL';
-      const sRegion = document.getElementById('f-region') ? document.getElementById('f-region').value : 'ALL';
+      const sectors = getCheckedValues('f-sector');
+      const systems = getCheckedValues('f-system');
+      const regions = getCheckedValues('f-region');
 
       return DATA.records.filter(r => {
-        // Sector: Privado (Seguro Privado, Particular) vs Público (Minsa, EsSalud, FFAA, etc.)
-        if (sSector === 'PRIVATE') {
-          if (r.J !== 'Seguro Privado' && r.J !== 'Particular') return false;
-        } else if (sSector === 'PUBLIC') {
-          if (r.J === 'Seguro Privado' || r.J === 'Particular') return false;
+        // 1. Sector: si está seleccionado un solo sector y no se especificaron sistemas particulares
+        if (sectors.length === 1 && (systems.length === 0 || systems.length === 5)) {
+          if (sectors.includes('PUBLIC')) {
+            if (r.J === 'Seguro Privado' || r.J === 'Particular') return false;
+          }
+          if (sectors.includes('PRIVATE')) {
+            if (r.J !== 'Seguro Privado' && r.J !== 'Particular') return false;
+          }
         }
 
-        if (sSystem !== 'ALL' && r.J !== sSystem) return false;
-        if (sRegion === 'LIMA' && r.H !== 'Lima') return false;
-        if (sRegion === 'PROV' && r.H === 'Lima') return false;
+        // 2. Sistema de Salud: suma de todos los sistemas marcados (OR inclusivo)
+        if (systems.length > 0 && systems.length < 5) {
+          if (!systems.includes(r.J)) return false;
+        }
+
+        // 3. Región geográfica (OR inclusivo entre regiones marcadas)
+        if (regions.length > 0 && regions.length < 2) {
+          if (regions.includes('LIMA') && r.H !== 'Lima') return false;
+          if (regions.includes('PROV') && r.H === 'Lima') return false;
+        }
+
         return true;
       });
     }
 
     function updateActiveFilterChips(records) {
-      const sSector = document.getElementById('f-sector');
-      const sSystem = document.getElementById('f-system');
-      const sRegion = document.getElementById('f-region');
       const sSearch = document.getElementById('f-search');
       const sShowNA = document.getElementById('f-show-na');
 
       const countText = document.getElementById('f-count-text');
       const pct = DATA.totalCount ? ((records.length / DATA.totalCount) * 100).toFixed(1) : '0';
-      countText.textContent = `${records.length} de ${DATA.totalCount} personas (${pct}%)`;
+      if (countText) {
+        countText.textContent = `${records.length} de ${DATA.totalCount} personas (${pct}%)`;
+      }
 
       const chipsContainer = document.getElementById('active-chips');
       const row = document.getElementById('active-filters-row');
-      chipsContainer.innerHTML = '';
+      if (!chipsContainer || !row) return;
 
+      chipsContainer.innerHTML = '';
       const activeList = [];
 
-      if (sSector && sSector.value !== 'ALL') {
-        const sectorTxt = sSector.options[sSector.selectedIndex].text.split('(')[0].trim();
-        activeList.push({
-          label: `Sector: ${sectorTxt}`,
-          clear: () => { sSector.value = 'ALL'; renderDashboard(); }
+      // Chips de sistemas individuales seleccionados
+      const systems = getCheckedValues('f-system');
+      if (systems.length > 0 && systems.length < 5) {
+        systems.forEach(sys => {
+          const sysCount = DATA.records.filter(r => r.J === sys).length;
+          activeList.push({
+            label: `Sistema: ${sys} (${sysCount})`,
+            clear: () => {
+              const cb = document.querySelector(`input[name="f-system"][value="${sys}"]`);
+              if (cb) cb.checked = false;
+              syncSectorFromSystems();
+              updateTriggerLabels();
+              renderDashboard();
+            }
+          });
         });
       }
-      if (sSystem && sSystem.value !== 'ALL') {
-        activeList.push({
-          label: `Sistema: ${sSystem.value}`,
-          clear: () => { sSystem.value = 'ALL'; renderDashboard(); }
+
+      // Chips de sector (solo si no hay sistemas individuales filtrados)
+      const sectors = getCheckedValues('f-sector');
+      if (sectors.length === 1 && (systems.length === 0 || systems.length === 5)) {
+        sectors.forEach(sec => {
+          const isPub = sec === 'PUBLIC';
+          activeList.push({
+            label: `Sector: ${isPub ? 'Público (485)' : 'Privado (127)'}`,
+            clear: () => {
+              const cb = document.querySelector(`input[name="f-sector"][value="${sec}"]`);
+              if (cb) cb.checked = false;
+              syncSystemsFromSector();
+              updateTriggerLabels();
+              renderDashboard();
+            }
+          });
         });
       }
-      if (sRegion && sRegion.value !== 'ALL') {
-        const txt = sRegion.options[sRegion.selectedIndex].text.split('(')[0].trim();
-        activeList.push({
-          label: `Región: ${txt}`,
-          clear: () => { sRegion.value = 'ALL'; renderDashboard(); }
+
+      // Chips de ubicación geográfica
+      const regions = getCheckedValues('f-region');
+      if (regions.length === 1) {
+        regions.forEach(reg => {
+          const isLima = reg === 'LIMA';
+          activeList.push({
+            label: `Región: ${isLima ? 'Solo Lima (292)' : 'Solo Regiones (320)'}`,
+            clear: () => {
+              const cb = document.querySelector(`input[name="f-region"][value="${reg}"]`);
+              if (cb) cb.checked = false;
+              updateTriggerLabels();
+              renderDashboard();
+            }
+          });
         });
       }
-      if (sSearch.value.trim() !== '') {
+
+      // Búsqueda
+      if (sSearch && sSearch.value.trim() !== '') {
         activeList.push({
           label: `Búsqueda: "${sSearch.value.trim()}"`,
           clear: () => { sSearch.value = ''; renderDashboard(); }
         });
       }
-      if (sShowNA.checked) {
+
+      // Mostrar No respondió
+      if (sShowNA && sShowNA.checked) {
         activeList.push({
           label: 'Con "No respondió" en gráficas',
           clear: () => { sShowNA.checked = false; renderDashboard(); }
@@ -1031,26 +1199,99 @@ const charts = {};
     }
 
     function resetAllFilters() {
-      const sSector = document.getElementById('f-sector');
-      const sSystem = document.getElementById('f-system');
-      const sRegion = document.getElementById('f-region');
+      document.querySelectorAll('.obs-ms-option input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+      });
       const sSearch = document.getElementById('f-search');
       const sShowNA = document.getElementById('f-show-na');
-      if (sSector) sSector.value = 'ALL';
-      if (sSystem) sSystem.value = 'ALL';
-      if (sRegion) sRegion.value = 'ALL';
       if (sSearch) sSearch.value = '';
       if (sShowNA) sShowNA.checked = false;
+
+      updateTriggerLabels();
       renderDashboard();
+    }
+
+    function setupMultiselectHandlers() {
+      // Toggle dropdown open/close on trigger button click
+      document.querySelectorAll('.obs-ms-trigger').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const parent = btn.closest('.obs-multiselect');
+          if (!parent) return;
+          const wasOpen = parent.classList.contains('is-open');
+
+          // Cerrar otros dropdowns abiertos
+          document.querySelectorAll('.obs-multiselect.is-open').forEach(el => {
+            el.classList.remove('is-open');
+            const b = el.querySelector('.obs-ms-trigger');
+            if (b) b.setAttribute('aria-expanded', 'false');
+          });
+
+          if (!wasOpen) {
+            parent.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+
+      // Cerrar dropdown al hacer clic fuera
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.obs-multiselect')) {
+          document.querySelectorAll('.obs-multiselect.is-open').forEach(el => {
+            el.classList.remove('is-open');
+            const b = el.querySelector('.obs-ms-trigger');
+            if (b) b.setAttribute('aria-expanded', 'false');
+          });
+        }
+      });
+
+      // Botones de acción "Todos" y "Limpiar" en cada dropdown
+      document.querySelectorAll('.obs-ms-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const target = btn.dataset.target;
+          const checkboxes = document.querySelectorAll(`input[name="${target}"]`);
+
+          checkboxes.forEach(cb => {
+            cb.checked = (action === 'all');
+          });
+
+          if (target === 'f-sector') {
+            syncSystemsFromSector();
+          } else if (target === 'f-system') {
+            syncSectorFromSystems();
+          }
+
+          updateTriggerLabels();
+          renderDashboard();
+        });
+      });
+
+      // Checkboxes individuales
+      document.querySelectorAll('.obs-ms-option input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          if (cb.name === 'f-sector') {
+            syncSystemsFromSector();
+          } else if (cb.name === 'f-system') {
+            syncSectorFromSystems();
+          }
+
+          updateTriggerLabels();
+          renderDashboard();
+        });
+      });
     }
 
     function initObservatorioMetrics() {
       if (!document.getElementById('questions-root')) return;
 
-      ['f-sector', 'f-system', 'f-region', 'f-show-na'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('change', renderDashboard);
-      });
+      setupMultiselectHandlers();
+      updateTriggerLabels();
+
+      const showNA = document.getElementById('f-show-na');
+      if (showNA) showNA.addEventListener('change', renderDashboard);
+
       const searchEl = document.getElementById('f-search');
       if (searchEl) searchEl.addEventListener('input', renderDashboard);
 

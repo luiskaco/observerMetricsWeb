@@ -38,33 +38,99 @@ if ( ! defined( 'ABSPATH' ) ) {
   <div class="filter-bar">
     <div class="filter-inner">
       <div class="f-controls">
-        <div class="f-group">
-          <label for="f-sector">Sector</label>
-          <select id="f-sector">
-            <option value="ALL">Todos los Sectores (612)</option>
-            <option value="PUBLIC">Público (485)</option>
-            <option value="PRIVATE">Privado (127)</option>
-          </select>
+        <div class="f-group obs-multiselect" id="ms-sector" data-filter="sector">
+          <label id="lbl-sector">Sector</label>
+          <button type="button" class="obs-ms-trigger" aria-haspopup="listbox" aria-expanded="false" id="btn-ms-sector">
+            <span class="obs-ms-trigger-text" id="txt-ms-sector">Todos los Sectores (612)</span>
+            <span class="obs-ms-arrow">▾</span>
+          </button>
+          <div class="obs-ms-dropdown" role="listbox">
+            <div class="obs-ms-actions">
+              <button type="button" class="obs-ms-action-btn" data-action="all" data-target="f-sector">Todos</button>
+              <button type="button" class="obs-ms-action-btn" data-action="clear" data-target="f-sector">Limpiar</button>
+            </div>
+            <div class="obs-ms-options">
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-sector" value="PUBLIC" />
+                <span class="obs-ms-opt-text">Público</span>
+                <span class="obs-ms-opt-count">485</span>
+              </label>
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-sector" value="PRIVATE" />
+                <span class="obs-ms-opt-text">Privado</span>
+                <span class="obs-ms-opt-count">127</span>
+              </label>
+            </div>
+          </div>
         </div>
-        <div class="f-group">
-          <label for="f-system">Sistema de Salud</label>
-          <select id="f-system">
-            <option value="ALL">Todos los Sistemas</option>
-            <option value="EsSalud">EsSalud (282)</option>
-            <option value="Minsa">Minsa (182)</option>
-            <option value="Seguro Privado">Seguro Privado (110)</option>
-            <option value="FFAA">FFAA (21)</option>
-            <option value="Particular">Particular (17)</option>
-          </select>
+
+        <div class="f-group obs-multiselect" id="ms-system" data-filter="system">
+          <label id="lbl-system">Sistema de Salud</label>
+          <button type="button" class="obs-ms-trigger" aria-haspopup="listbox" aria-expanded="false" id="btn-ms-system">
+            <span class="obs-ms-trigger-text" id="txt-ms-system">Todos los Sistemas (612)</span>
+            <span class="obs-ms-arrow">▾</span>
+          </button>
+          <div class="obs-ms-dropdown" role="listbox">
+            <div class="obs-ms-actions">
+              <button type="button" class="obs-ms-action-btn" data-action="all" data-target="f-system">Todos</button>
+              <button type="button" class="obs-ms-action-btn" data-action="clear" data-target="f-system">Limpiar</button>
+            </div>
+            <div class="obs-ms-options">
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-system" value="EsSalud" />
+                <span class="obs-ms-opt-text">EsSalud</span>
+                <span class="obs-ms-opt-count">282</span>
+              </label>
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-system" value="Minsa" />
+                <span class="obs-ms-opt-text">Minsa</span>
+                <span class="obs-ms-opt-count">182</span>
+              </label>
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-system" value="Seguro Privado" />
+                <span class="obs-ms-opt-text">Seguro Privado</span>
+                <span class="obs-ms-opt-count">110</span>
+              </label>
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-system" value="FFAA" />
+                <span class="obs-ms-opt-text">FFAA</span>
+                <span class="obs-ms-opt-count">21</span>
+              </label>
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-system" value="Particular" />
+                <span class="obs-ms-opt-text">Particular</span>
+                <span class="obs-ms-opt-count">17</span>
+              </label>
+            </div>
+          </div>
         </div>
-        <div class="f-group">
-          <label for="f-region">Ubicación Geográfica</label>
-          <select id="f-region">
-            <option value="ALL">Todo el Perú (612)</option>
-            <option value="LIMA">Solo residentes en Lima (292)</option>
-            <option value="PROV">Solo Regiones fuera de Lima (320)</option>
-          </select>
+
+        <div class="f-group obs-multiselect" id="ms-region" data-filter="region">
+          <label id="lbl-region">Ubicación Geográfica</label>
+          <button type="button" class="obs-ms-trigger" aria-haspopup="listbox" aria-expanded="false" id="btn-ms-region">
+            <span class="obs-ms-trigger-text" id="txt-ms-region">Todo el Perú (612)</span>
+            <span class="obs-ms-arrow">▾</span>
+          </button>
+          <div class="obs-ms-dropdown" role="listbox">
+            <div class="obs-ms-actions">
+              <button type="button" class="obs-ms-action-btn" data-action="all" data-target="f-region">Todos</button>
+              <button type="button" class="obs-ms-action-btn" data-action="clear" data-target="f-region">Limpiar</button>
+            </div>
+            <div class="obs-ms-options">
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-region" value="LIMA" />
+                <span class="obs-ms-opt-text">Solo residentes en Lima</span>
+                <span class="obs-ms-opt-count">292</span>
+              </label>
+              <label class="obs-ms-option">
+                <input type="checkbox" name="f-region" value="PROV" />
+                <span class="obs-ms-opt-text">Solo Regiones fuera de Lima</span>
+                <span class="obs-ms-opt-count">320</span>
+              </label>
+            </div>
+          </div>
         </div>
+
         <div class="f-group">
           <label for="f-search">Buscar Pregunta</label>
           <input type="text" id="f-search" placeholder="Ej. biopsia, estadio, espera..." />

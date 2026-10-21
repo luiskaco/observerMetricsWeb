@@ -206,6 +206,157 @@ h1.page-title {
   box-shadow: 0 0 0 2px var(--primary-light);
 }
 
+/* Multiselect Dropdowns */
+.obs-multiselect {
+  position: relative;
+  min-width: 195px;
+}
+
+.obs-ms-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.48rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.obs-ms-trigger:hover,
+.obs-multiselect.is-open .obs-ms-trigger {
+  border-color: var(--primary);
+}
+
+.obs-multiselect.is-open .obs-ms-trigger {
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.obs-ms-trigger.has-active {
+  background: #fdfcff;
+  border-color: var(--primary);
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.obs-ms-trigger-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.obs-ms-arrow {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.obs-multiselect.is-open .obs-ms-arrow {
+  transform: rotate(180deg);
+}
+
+.obs-ms-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 240px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+  padding: 0.4rem;
+  z-index: 1050;
+  animation: obsFadeIn 0.12s ease;
+}
+
+.obs-multiselect.is-open .obs-ms-dropdown {
+  display: block;
+}
+
+.obs-ms-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.4rem 0.4rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 0.35rem;
+}
+
+.obs-ms-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.obs-ms-action-btn:hover {
+  background: var(--primary-light);
+}
+
+.obs-ms-options {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.obs-ms-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.38rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.83rem;
+  color: var(--text);
+  transition: background 0.12s;
+  user-select: none;
+}
+
+.obs-ms-option:hover {
+  background: #f8fafc;
+}
+
+.obs-ms-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.obs-ms-opt-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.obs-ms-opt-count {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: #f1f5f9;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+}
+
 .btn-reset {
   padding: 0.5rem 0.95rem;
   border-radius: 8px;
@@ -825,7 +976,8 @@ table.ans-table tr.na-row td {
   }
 
   .f-group select,
-  .f-group input {
+  .f-group input,
+  .obs-ms-trigger {
     width: 100%;
     min-height: 44px;
     font-size: 16px; /* Evita auto-zoom en iOS Safari al tocar selects */
