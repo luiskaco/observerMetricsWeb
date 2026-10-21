@@ -40,8 +40,7 @@ const charts = {};
         'Consulta con especialista',
         'Cirugía',
         'Quimioterapia',
-        'Radioterapia',
-        'Otro tratamiento'
+        'Radioterapia'
       ],
 
       // Pregunta 4: Tiempo de espera atención en Lima
