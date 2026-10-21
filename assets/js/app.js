@@ -14,7 +14,7 @@ const charts = {};
       'Z': { filter: r => r.Z !== 'No corresponde', badge: 'Total Derivadas' },
       'AB': { filter: r => r.AB !== 'No corresponde', badge: 'Total Derivadas' },
       'AC': { filter: r => r.AC !== 'No respondió' && r.AC !== 'No corresponde', badge: 'Total Derivadas' },
-      'AE': { filter: r => r.AE !== 'No corresponde', badge: 'Total Derivadas' },
+      'AE': { filter: r => r.AE !== 'No corresponde' && r.AE !== 'No respondió', badge: 'Total Derivadas' },
       'AF': { filter: r => r.AF !== 'No corresponde', badge: 'Total Derivadas' },
       'AK': { filter: r => r.AK !== 'No corresponde', badge: 'Total Derivadas' },
       'AM': { filter: r => r.AM !== 'No corresponde', badge: 'Total Derivadas' }
@@ -737,8 +737,8 @@ const charts = {};
             let ans = (q.col === 'M') ? r.H : r[q.col];
             ans = normalizeAnswer(q.col, ans);
 
-            // En preguntas condicionadas, no añadir el item 'No corresponde' ni respuestas no aplicables
-            if (isConditional && (ans === 'No corresponde' || (q.col === 'AC' && ans === 'No respondió'))) {
+            // En preguntas condicionadas, no añadir el item 'No corresponde' ni 'No respondió'
+            if (isConditional && (ans === 'No corresponde' || ans === 'No respondió')) {
               naCount++;
               return;
             }
