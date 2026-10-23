@@ -26,7 +26,7 @@ const charts = {};
     const QUESTION_CANONICAL_ORDER = {
       // Perfil
       'I': ['Sí', 'No'],
-      'J': ['EsSalud', 'MINSA / SIS', 'Seguro Privado', 'FF.AA. / PNP', 'Atención Particular', 'Minsa', 'FFAA', 'Particular'],
+      'J': ['EsSalud', 'MINSA / SIS', 'Seguro Privado', 'FF.AA. / PNP', 'Atención Particular'],
       'K': ['Menos de 30 años', '30–39 años', '40–49 años', '50–59 años', '60–69 años', '70 años a más', 'No recuerdo'],
       'L': ['Sí', 'No'],
 
