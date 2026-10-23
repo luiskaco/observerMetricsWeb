@@ -26,7 +26,7 @@ const charts = {};
     const QUESTION_CANONICAL_ORDER = {
       // Perfil
       'I': ['Sí', 'No'],
-      'J': ['Minsa', 'EsSalud', 'FFAA', 'Seguro Privado', 'Particular'],
+      'J': ['EsSalud', 'MINSA / SIS', 'Seguro Privado', 'FF.AA. / PNP', 'Atención Particular', 'Minsa', 'FFAA', 'Particular'],
       'K': ['Menos de 30 años', '30–39 años', '40–49 años', '50–59 años', '60–69 años', '70 años a más', 'No recuerdo'],
       'L': ['Sí', 'No'],
 
@@ -362,6 +362,11 @@ const charts = {};
       }
 
       switch (col) {
+        case 'J': // Sistema de Salud
+          if (ans === 'Minsa') return 'MINSA / SIS';
+          if (ans === 'FFAA') return 'FF.AA. / PNP';
+          if (ans === 'Particular') return 'Atención Particular';
+          break;
         case 'N': // Derivada a Lima
           if (ans === 'Sí me derivaron a Lima') return 'Sí';
           if (ans === 'No me derivaron a Lima') return 'No';
@@ -688,7 +693,7 @@ const charts = {};
         systems.forEach(sys => {
           const sysCount = DATA.records.filter(r => r.J === sys).length;
           activeList.push({
-            label: `Sistema: ${sys} (${sysCount})`,
+            label: `Sistema: ${sys === 'Minsa' ? 'MINSA / SIS' : (sys === 'FFAA' ? 'FF.AA. / PNP' : (sys === 'Particular' ? 'Atención Particular' : sys))} (${sysCount})`,
             clear: () => {
               const cb = document.querySelector(`input[name="f-system"][value="${sys}"]`);
               if (cb) cb.checked = false;

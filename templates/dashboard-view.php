@@ -83,7 +83,7 @@ if ( ! defined( 'ABSPATH' ) ) {
               </label>
               <label class="obs-ms-option">
                 <input type="checkbox" name="f-system" value="Minsa" />
-                <span class="obs-ms-opt-text">Minsa</span>
+                <span class="obs-ms-opt-text">MINSA / SIS</span>
                 <span class="obs-ms-opt-count">182</span>
               </label>
               <label class="obs-ms-option">
@@ -93,12 +93,12 @@ if ( ! defined( 'ABSPATH' ) ) {
               </label>
               <label class="obs-ms-option">
                 <input type="checkbox" name="f-system" value="FFAA" />
-                <span class="obs-ms-opt-text">FFAA</span>
+                <span class="obs-ms-opt-text">FF.AA. / PNP</span>
                 <span class="obs-ms-opt-count">21</span>
               </label>
               <label class="obs-ms-option">
                 <input type="checkbox" name="f-system" value="Particular" />
-                <span class="obs-ms-opt-text">Particular</span>
+                <span class="obs-ms-opt-text">Atención Particular</span>
                 <span class="obs-ms-opt-count">17</span>
               </label>
             </div>
