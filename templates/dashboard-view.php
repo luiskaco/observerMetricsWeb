@@ -157,7 +157,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   <div class="main-wrap">
     <aside class="sidebar" id="sidebar-aside">
       <div class="sidebar-title" id="sidebar-toggle-btn" role="button" tabindex="0" aria-expanded="false">
-        <span>Índice de Preguntas (43)</span>
+        <span>Índice de Preguntas (42)</span>
         <span class="sidebar-toggle-icon" aria-hidden="true">▾</span>
       </div>
       <div id="sidebar-nav" class="sidebar-nav-content"></div>
