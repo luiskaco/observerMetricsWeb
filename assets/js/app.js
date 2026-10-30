@@ -22,6 +22,202 @@ const charts = {};
 
     const CONDITIONAL_QUESTION_COLS = new Set(['O', 'P', 'V', 'W', 'X', 'Y', 'Z', 'AB', 'AC', 'AE', 'AF', 'AG', 'AI', 'AK', 'AM']);
 
+    const pubList = ['Minsa', 'EsSalud', 'FFAA'];
+    const privList = ['Seguro Privado', 'Particular'];
+
+    const SECTOR_ANALYSIS = {
+  // --- PERFILES DEMOGRÁFICOS ---
+  "H": {
+    "pub": "En el sector público (N = 485), Lima concentra 216 pacientes (44.5%), mientras que las regiones del interior suman el 55.5% (269 pacientes), destacando Arequipa (87, 17.9%), Piura (70, 14.4%), Junín (41, 8.5%), Lambayeque (38, 7.8%) y La Libertad (33, 6.8%). Refleja la amplia cobertura nacional y descentralizada de las redes de EsSalud y MINSA.",
+    "priv": "En el sector privado (N = 127), Lima concentra a la gran mayoría con 76 pacientes (59.8%), seguida de La Libertad (24, 18.9%) y Junín (12, 9.4%), con menor presencia en Arequipa (6, 4.7%) y Piura (6, 4.7%). La oferta oncológica privada y de clínicas de seguros se concentra marcadamente en la capital y el norte del país."
+  },
+  "I": {
+    "pub": "El 81.6% (396 personas) son pacientes actuales directas atendidas en hospitales públicos, mientras que el 18.4% (89 personas) corresponde a familiares o cuidadores que respondieron en su representación.",
+    "priv": "El 78.0% (99 personas) son pacientes directas atendidas en clínicas privadas o EPS, y el 22.0% (28 personas) corresponde a familiares y cuidadores a cargo del soporte logístico y cobertura."
+  },
+  "J": {
+    "pub": "Dentro del sector público, EsSalud representa a 282 encuestadas (58.1%), el MINSA / SIS a 182 encuestadas (37.5%) y la Sanidad de las Fuerzas Armadas y Policía Nacional (FF.AA. / PNP) a 21 pacientes (4.3%).",
+    "priv": "Dentro del sector privado, el Seguro Privado (pólizas de salud y planes EPS) abarca a 110 personas (86.6%), mientras que 17 personas (13.4%) se atienden bajo la modalidad de Atención Particular mediante pago directo de bolsillo."
+  },
+  "K": {
+    "pub": "En el sector público, el diagnóstico se concentra en los rangos de 50–59 años con 171 pacientes (35.3%) y 40–49 años con 161 pacientes (33.2%), seguidos por 60–69 años (75, 15.5%). Las pacientes jóvenes menores de 40 años representan el 13.0% (63 mujeres).",
+    "priv": "En el sector privado, predomina un perfil más joven: el 44.1% (56 mujeres) tenía entre 40–49 años al momento del diagnóstico, seguido por 30–39 años con 24 pacientes (18.9%) y 50–59 años con 20 pacientes (15.7%). Las mujeres diagnosticadas antes de los 40 años alcanzan el 22.0% (28 casos)."
+  },
+  "L": {
+    "pub": "414 personas (85.4% del sector público) otorgaron su consentimiento informado afirmativo para el procesamiento estadístico y epidemiológico de sus datos.",
+    "priv": "108 personas (85.0% del sector privado) otorgaron su consentimiento informado afirmativo para el estudio del Observatorio."
+  },
+
+  // --- 1. LUGAR DE DIAGNÓSTICO Y DERIVACIÓN A LIMA ---
+  "M": {
+    "pub": "El 44.5% (216 personas) fue diagnosticada en Lima. En regiones públicas destacan Arequipa (87, 17.9%), Piura (70, 14.4%), Junín (41, 8.5%), Lambayeque (38, 7.8%) y La Libertad (33, 6.8%), donde la confirmación diagnóstica se logró en hospitales locales de EsSalud y MINSA.",
+    "priv": "El 59.8% (76 personas) se diagnosticó en establecimientos privados de Lima, seguida de centros clínicos en La Libertad (24, 18.9%), Junín (12, 9.4%) y Arequipa (6, 4.7%)."
+  },
+  "N": {
+    "pub": "Entre las 275 pacientes públicas de regiones, 102 personas (37.1% de quienes viven en regiones; 21.0% del total público) requirieron ser derivadas o trasladadas a Lima para acceder a confirmación o tratamiento especializado; 173 resolvieron su atención en su región y 210 ya residían en Lima.",
+    "priv": "Entre las 50 pacientes privadas de regiones, 23 requirieron traslado a Lima (46.0% de quienes residen en provincias; 18.1% del total privado), principalmente por falta de infraestructura de radioterapia o cirugías de alta complejidad en su localidad."
+  },
+  "O": {
+    "pub": "Entre las pacientes del sector público que requirieron traslado a Lima con etapa registrada (94 personas), la principal causa fue Confirmación del diagnóstico / biopsia con 39 casos (41.5%), seguida de Quimioterapia con 16 casos (17.0%), Consulta con especialista con 15 casos (16.0%), Radioterapia con 10 casos (10.6%) y Cirugía con 10 casos (10.6%).",
+    "priv": "En el sector privado, entre quienes requirieron derivación a Lima (23 personas), las etapas de traslado fueron: Confirmación del diagnóstico / biopsia con 10 casos (43.5%), Radioterapia con 6 casos (26.1%), Consulta con especialista con 5 casos (21.7%) y Quimioterapia con 2 casos (8.7%)."
+  },
+  "P": {
+    "pub": "Al ser derivadas a Lima, el tiempo de espera hasta recibir atención efectiva en el sector público fue crítico: Hasta 30 días en 29 pacientes (30.9%), Hasta 3 meses en 24 (25.5%), Hasta 7 días en 15 (16.0%), Más de 6 meses en 10 (10.6%) y Hasta 6 meses en 10 (10.6%). Más del 46% tardó más de un mes en iniciar su atención en la capital.",
+    "priv": "En el sector privado, el 61.9% de las pacientes derivadas a Lima accedió en plazos breves: Hasta 30 días (13 pacientes, 61.9%) y Hasta 7 días (3 pacientes, 14.3%). Solo 3 pacientes esperaron hasta 3 meses."
+  },
+
+  // --- 2. DETECCIÓN INICIAL Y PRIMERA CONSULTA ---
+  "Q": {
+    "pub": "En el sector público, la primera señal de alarma fue predominantemente un hallazgo físico por bulto o nódulo palpable con 227 casos (46.8%), mientras que la mamografía preventiva solo detectó el 27.4% (133 casos) y los controles de rutina el 6.4% (31 casos), evidenciando un diagnóstico tardío por falta de tamizaje temprano.",
+    "priv": "En el sector privado, la mamografía preventiva fue la principal vía de detección con 45 casos (35.4%), superando ligeramente al bulto palpable (44 casos, 34.6%) y los chequeos de rutina (18 casos, 14.2%). El tamizaje regular permite capturar lesiones no palpables de forma precoz."
+  },
+  "R": {
+    "pub": "Ante la sospecha inicial, 171 pacientes públicas (35.3%) acudieron a buscar atención en menos de 7 días y 42 (8.7%) el mismo día. No obstante, 112 pacientes (23.1%) tardaron hasta un mes y 97 (20.0%) demoraron hasta 3 meses en acudir.",
+    "priv": "En el sector privado, 48 pacientes (37.8%) acudieron dentro de los primeros 7 días y 23 (18.1%) el mismo día. Un 24.4% (31 pacientes) esperó hasta un mes y 15 (11.8%) tardó hasta 3 meses."
+  },
+  "S": {
+    "pub": "Para conseguir la primera consulta médica en el sistema público: 221 pacientes (45.6%) esperaron hasta 30 días, 112 (23.1%) hasta 7 días, 65 (13.4%) el mismo día y 48 (9.9%) tuvieron que esperar hasta 3 meses debido al cuello de botella en consultorios externos.",
+    "priv": "En el sector privado, el acceso a la primera cita fue sustancialmente más ágil: el 62.2% consiguió cita en su primera semana (64 pacientes en hasta 7 días y 15 el mismo día). 43 pacientes (33.9%) esperaron hasta 30 días."
+  },
+  "T": {
+    "pub": "El 76.5% (371 pacientes) realizó su primera consulta médica en un establecimiento público (EsSalud: 228, MINSA/SIS: 126, FF.AA.: 17). Sin embargo, 109 pacientes (22.5%) tuvieron que realizarla en el sector privado pagando de su propio bolsillo para ser atendidas con mayor celeridad.",
+    "priv": "En el sector privado, el 98.4% (125 pacientes) realizó su primera consulta en una clínica privada o consultorio particular (108 de seguro privado y 17 de atención particular); únicamente 2 pacientes acudieron inicialmente a un centro público."
+  },
+
+  // --- 3. EXÁMENES DE IMÁGENES Y DIAGNÓSTICO ---
+  "U": {
+    "pub": "En la primera consulta médica, al 95.5% (463 pacientes públicas) se le solicitó de inmediato exámenes complementarios de mama (mamografía, ecografía o resonancia).",
+    "priv": "En el sector privado, al 98.4% (125 pacientes) se le prescribieron exámenes de mama durante su primera consulta médica."
+  },
+  "V": {
+    "pub": "El estudio más prescrito en el público fue la combinación de mamografía y ecografía en 290 pacientes (59.8%), seguida por ecografía mamaria exclusiva (73, 15.1%), mamografía sola (69, 14.2%) y resonancia magnética (15, 3.1%).",
+    "priv": "En el privado, la combinación de mamografía y ecografía alcanzó el 63.8% (81 casos), mientras que la resonancia magnética tuvo una tasa mayor de uso (14 casos, 11.0%) y la ecografía sola representó el 11.8% (15 casos)."
+  },
+  "W": {
+    "pub": "Para realizarse los exámenes solicitados en el sector público, el 46.0% (223 pacientes) esperó hasta 30 días y el 20.4% (99 pacientes) esperó hasta 3 meses. Solo el 24.3% (118 pacientes) logró realizárselos en 7 días.",
+    "priv": "En el sector privado, el 85.0% de las pacientes se realizó los exámenes dentro del primer mes: 55 pacientes (43.3%) en menos de 7 días y 53 (41.7%) en hasta 30 días. Solo 16 esperaron hasta 3 meses."
+  },
+  "X": {
+    "pub": "El tiempo hasta recibir los resultados del examen en el sector público tardó hasta 30 días en 260 pacientes (53.6%) y hasta 3 meses en 68 pacientes (14.0%). Solo el 17.1% (83) obtuvo el informe en menos de 7 días.",
+    "priv": "En el sector privado, la entrega de resultados fue significativamente más rápida: el 54.3% (69 pacientes) los recibió en menos de 7 días y el 9.4% (12 pacientes) el mismo día. El 32.3% (41) los tuvo en hasta 30 días."
+  },
+  "Y": {
+    "pub": "El 67.0% (325 pacientes públicas) reportó haber enfrentado serias dificultades o barreras para poder realizarse los exámenes de mama indicados.",
+    "priv": "Por el contrario, en el sector privado el 67.7% (86 pacientes) afirmó no haber tenido dificultades para realizar sus estudios de imagen; el 30.7% (39) reportó algún inconveniente administrativo o de cobertura."
+  },
+  "Z": {
+    "pub": "Entre quienes enfrentaron trabas en el público, la principal dificultad fue 'No había citas disponibles' con 146 menciones (30.1%), seguida por 'Tuve que pagar el examen en privado por demora pública' (60, 12.4%) y 'Equipos descompuestos o inoperativos' (49, 10.1%).",
+    "priv": "En el sector privado, las dificultades identificadas correspondieron a trámites con el seguro o autorizaciones de cobertura de la póliza (14, 11.0%) y tener que asumir pagos no cubiertos o copagos elevados (13, 10.2%)."
+  },
+
+  // --- 4. DERIVACIÓN Y CONTINUIDAD DE LA ATENCIÓN ---
+  "AA": {
+    "pub": "El 67.2% (326 pacientes públicas) debió ser derivada a otro establecimiento o especialista tras sus exámenes iniciales para continuar con la confirmación diagnóstica, reflejando fragmentación en el primer y segundo nivel asistencial.",
+    "priv": "En el sector privado, la mayoría de pacientes (69, 54.3%) resolvió su atención con el mismo especialista o clínica sin necesidad de derivación externa; un 45.7% (58 pacientes) fue derivada a mastólogos u oncólogos de referencia."
+  },
+  "AB": {
+    "pub": "Tras la derivación médica en el público, el tiempo de espera para ser evaluada por el nuevo especialista fue: Hasta 15 días en 149 pacientes (30.7%), Hasta 7 días en 89 (18.4%), Hasta 30 días en 65 (13.4%) y Hasta 3 meses en 31 (6.4%).",
+    "priv": "En el sector privado, la atención tras la derivación se concretó de manera oportuna: el 26.8% (34 pacientes) fue atendida en menos de 7 días y el 18.1% (23 pacientes) en hasta 15 días."
+  },
+  "AC": {
+    "pub": "Entre las pacientes del sector público que registraron su trayecto de derivación (357 con respuesta), el 60.5% (216 personas) se mantuvo dentro del sistema público sin cambiar de sector. Sin embargo, un 23.5% (84 personas: 48 en EsSalud, 30 en MINSA y 6 en FF.AA.) inició sus exámenes en clínicas privadas y migró hacia el sector público para poder costear su tratamiento oncológico, mientras que un 10.9% (39 personas) migró de Público a Privado por las demoras del Estado.",
+    "priv": "En el sector privado (127 pacientes), el 83.5% (106 personas) se mantuvo íntegramente en el sistema privado de clínicas y EPS. Un 12.6% (16 personas) migró al sector privado tras haber iniciado en hospitales públicos para evitar las demoras burocráticas, y solo 2 personas (1.6%) migraron de Privado a Público durante esta fase de derivación diagnóstica."
+  },
+
+  // --- 5. BIOPSIA Y DIAGNÓSTICO PATOLÓGICO ---
+  "AD": {
+    "pub": "Al 96.5% (468 pacientes públicas) se le indicó formalmente una biopsia de mama tras los hallazgos sospechosos de imagen.",
+    "priv": "Al 98.4% (125 pacientes privadas) se le indicó una biopsia mamaria para confirmación histopatológica."
+  },
+  "AE": {
+    "pub": "El tiempo de espera para realizarse la biopsia en el público fue: Hasta 15 días en 184 pacientes (37.9%), Hasta 7 días en 111 (22.9%), Hasta 30 días en 105 (21.6%) y de 1 a más de 6 meses en 52 pacientes (10.7%).",
+    "priv": "En el sector privado, el 85.0% de las pacientes logró realizarse la biopsia en menos de dos semanas: Hasta 15 días en 62 pacientes (48.8%) y Hasta 7 días en 46 pacientes (36.2%). Solo 13 pacientes esperaron hasta 30 días."
+  },
+  "AF": {
+    "pub": "La entrega del informe anatomopatológico de la biopsia en el sector público tardó: Hasta 15 días en 192 casos (39.6%), Hasta 30 días en 146 casos (30.1%), y más de un mes en 48 pacientes (9.9%).",
+    "priv": "En el sector privado, el 86.6% de los resultados de patología se entregó en 15 días o menos: 77 pacientes (60.6%) en hasta 15 días y 33 pacientes (26.0%) en menos de una semana. Solo el 9.4% tardó hasta un mes."
+  },
+  "AG": {
+    "pub": "El 69.1% (335 pacientes) se realizó la biopsia en hospitales del Estado (EsSalud, MINSA, INEN/IREN). Sin embargo, 120 pacientes públicas (24.7%) pagaron su biopsia de forma particular en clínicas privadas para no demorar el inicio del tratamiento.",
+    "priv": "En el sector privado, el 96.1% (122 pacientes) se realizó la biopsia en clínicas o laboratorios privados de su cobertura; solo 3 pacientes acudieron a centros públicos."
+  },
+  "AH": {
+    "pub": "Al 63.1% (306 pacientes) se le informó con claridad el subtipo tumoral de su cáncer de mama; no obstante, a casi un tercio (159 pacientes, 32.8%) nunca se le explicó su subtipo genético o biológico.",
+    "priv": "En el privado, al 67.7% (86 pacientes) se le explicó su subtipo molecular con precisión; un 29.1% (37 pacientes) refirió no haber recibido esta información por parte del equipo médico."
+  },
+  "AI": {
+    "pub": "Entre las opciones informadas en el sector público: Luminal A/B u hormonal (135 pacientes, 27.8%), HER2 positivo (114 pacientes, 23.5%), y Triple Negativo (44 pacientes, 9.1%). Un 40.4% (196 pacientes) no recibió o no conoce esta clasificación biológica.",
+    "priv": "En el sector privado, destaca una mayor proporción de pacientes que conoce su perfil: Luminal A/B (44 pacientes, 34.6%), HER2 positivo (27 pacientes, 21.3%) y Triple Negativo (13 pacientes, 10.2%). Un 33.9% indicó no recordarlo o no haber sido informada."
+  },
+
+  // --- 6. ESTADIAJE CLÍNICO ---
+  "AJ": {
+    "pub": "En el sector público predominan los diagnósticos intermedios y avanzados: Estadio II con 203 pacientes (41.9%) y Estadio III con 139 pacientes (28.7%). El Estadio I solo abarcó al 10.1% (49 pacientes), reflejando que más del 70% llega con tumores localmente avanzados.",
+    "priv": "En el sector privado destaca una mayor proporción de diagnósticos en etapas tempranas: Estadio I (44 pacientes, 34.6%), Estadio II (44 pacientes, 34.6%), Estadio III (14 pacientes, 11.0%) y Estadio 0 in situ (9 pacientes, 7.1%). Las etapas precoces (0 y I) alcanzan el 41.7% (frente a solo 12.0% en el público).",
+  },
+  "AK": {
+    "pub": "Para completar los exámenes de estadiaje (tomografías, gammagrafías, ecografías abdominales): el 45.2% (219 pacientes) tardó hasta 30 días, el 20.6% (100 pacientes) hasta 3 meses, y 36 pacientes esperaron más de 3 meses.",
+    "priv": "En el sector privado, el 81.9% de los estudios de estadio concluyó dentro del primer mes: 78 pacientes (61.4%) en hasta 30 días y 26 (20.5%) en menos de una semana."
+  },
+  "AL": {
+    "pub": "El 17.7% (86 pacientes públicas) reportó formalmente que su enfermedad avanzó o progresó a un estadio clínico superior durante los meses de espera previa al inicio del tratamiento oncológico.",
+    "priv": "En el sector privado, el 15.7% (20 pacientes) refirió avance del estadio clínico durante el proceso diagnóstico previo al tratamiento."
+  },
+  "AM": {
+    "pub": "Entre quienes reportaron un estadio informado al inicio del tratamiento médico en el sector público, destacan 44 casos en Estadio III (9.1%), 28 en Estadio IV con metástasis (5.8%) y 14 en Estadio II.",
+    "priv": "En el sector privado, entre las pacientes que refirieron un estadio redefinido al inicio, se registraron 9 casos en Estadio III y 7 casos en Estadio IV metastásico."
+  },
+
+  // --- 7. TRATAMIENTO ONCOLÓGICO ---
+  "AN": {
+    "pub": "En el sector público, la Quimioterapia fue el primer tratamiento indicado de manera mayoritaria con 281 pacientes (57.9%), seguida de la Cirugía con 140 pacientes (28.9%) y Combinación terapéutica con 52 pacientes (10.7%). La alta tasa de quimioterapia neoadyuvante refleja la necesidad de reducir tumores avanzados previos a operar.",
+    "priv": "En el sector privado, la Cirugía fue la indicación inicial más frecuente con 61 pacientes (48.0%), superando a la Quimioterapia (34 pacientes, 26.8%) y Tratamiento combinado (30 pacientes, 23.6%), lo que guarda estricta correlación con la alta detección en etapas tempranas Estadio I y II.",
+  },
+  "AO": {
+    "pub": "Desde la confirmación diagnóstica hasta recibir la indicación formal del oncólogo: 236 pacientes públicas (48.7%) esperaron hasta 30 días, 111 (22.9%) hasta 3 meses, 83 (17.1%) hasta 7 días y 34 (7.0%) esperaron más de 3 meses.",
+    "priv": "En el sector privado, el 83.5% recibió indicación terapéutica en menos de un mes: 79 pacientes (62.2%) en hasta 30 días y 27 (21.3%) en menos de 7 días. Solo 18 pacientes esperaron hasta 3 meses."
+  },
+  "AP": {
+    "pub": "Desde la indicación médica hasta el inicio efectivo de la terapia (primera sesión de quimio o fecha de cirugía): 193 pacientes públicas (39.8%) esperaron hasta 30 días, 167 (34.4%) tardaron hasta 3 meses, y 35 pacientes (7.2%) esperaron de 3 a más de 6 meses.",
+    "priv": "En el sector privado, el 88.2% inició su tratamiento en menos de un mes: 59 pacientes (46.5%) en hasta 30 días y 53 pacientes (41.7%) en menos de 7 días. Solo 13 pacientes esperaron hasta 3 meses."
+  },
+  "AQ": {
+    "pub": "El 95.1% (461 pacientes públicas) inició efectivamente su tratamiento en hospitales públicos (EsSalud: 270, MINSA/INEN: 172, FF.AA.: 19); 18 pacientes (3.7%) debieron iniciarlo en clínicas privadas.",
+    "priv": "El 96.9% (123 pacientes privadas) inició su tratamiento en centros oncológicos privados o clínicas con cobertura de su seguro; únicamente 3 pacientes acudieron a centros públicos."
+  },
+
+  // --- 8. PERCEPCIÓN DE BARRERAS Y EXPERIENCIA DEL PACIENTE ---
+  "AR": {
+    "pub": "Las etapas con mayor tiempo de espera percibido en el sector público fueron: Exámenes de diagnóstico (161 menciones, 33.2%), Inicio efectivo del tratamiento (109 menciones, 22.5%) y Estudios para determinar estadio (59 menciones, 12.2%).",
+    "priv": "En el sector privado, la respuesta predominante fue 'No tuve una espera importante' con 42 pacientes (33.1%), seguida por Inicio del tratamiento (24 menciones, 18.9%) y Exámenes diagnósticos (23 menciones, 18.1%)."
+  },
+  "AS": {
+    "pub": "Las principales barreras reportadas a lo largo de la ruta en el público fueron: Conseguir una cita médica (140 pacientes, 28.9%), Realizar los exámenes indicados (85 pacientes, 17.5%), Esperar los resultados (71 pacientes, 14.6%) y Disponibilidad de medicinas (50 pacientes, 10.3%).",
+    "priv": "En el sector privado, las principales dificultades se relacionaron con autorizaciones de cobertura de seguros (30 pacientes, 23.6%) y costo económico o copagos (25 pacientes, 19.7%). El 20.5% (26 pacientes) afirmó no haber tenido ninguna dificultad."
+  },
+  "AT": {
+    "pub": "Casi la mitad de las pacientes del sector público (227 mujeres, 46.8%) tuvo que acudir de forma particular al sector privado y pagar de su bolsillo para acelerar consultas, ecografías y biopsias debido a la saturación de los hospitales públicos.",
+    "priv": "En el sector privado, el 52.0% (66 pacientes) también debió asumir pagos directos particulares fuera de su plan de seguro para acceder a procedimientos de mayor rapidez o tecnologías no cubiertas."
+  },
+  "AU": {
+    "pub": "El 69.5% de las pacientes del sector público (337 mujeres) consideró firmemente que los trámites burocráticos y las demoras del sistema de salud retrasaron de manera perjudicial el inicio de su tratamiento oncológico.",
+    "priv": "En el sector privado, el 66.9% (85 pacientes) consideró que el servicio fue oportuno y NO retrasó su tratamiento, mientras que un 26.8% (34 pacientes) percibió retrasos asociados a aprobaciones de cartas de garantía."
+  },
+  "AV": {
+    "pub": "Tiempo total transcurrido desde la primera sospecha hasta el inicio del tratamiento: En el sector público, el 58.1% tardó más de 3 meses (148 pacientes, 30.5% esperó de 3 a 6 meses; y 134 pacientes, 27.6% esperó más de 6 meses). Solo el 14.2% inició en menos de un mes.",
+    "priv": "En el sector privado, el 79.5% de las pacientes inició su tratamiento dentro de los primeros 3 meses: 37 pacientes (29.1%) en hasta 30 días, 34 (26.8%) en hasta 3 meses y 30 (23.6%) en menos de 7 días. Solo el 14.2% tardó más de 3 meses."
+  },
+  "AW": {
+    "pub": "En cuanto a claridad de la información: En el sector público, solo el 29.5% (143 pacientes) refirió haber recibido 'Siempre' información clara y oportuna sobre el siguiente paso; el 47.2% la recibió 'Algunas veces' o 'Casi siempre', y un 14.8% indicó que 'Nunca' se le explicó.",
+    "priv": "En el sector privado, la comunicación médica fue marcadamente superior: el 65.4% (83 pacientes) refirió que 'Siempre' recibió información clara y detallada, y el 16.5% 'Casi siempre'. Solo el 12.6% refirió 'Nunca'."
+  },
+  "AX": {
+    "pub": "A 190 pacientes del sector público (39.2%) se les indicó algún medicamento o tratamiento innovador (terapias dirigidas, inmunoterapias o inhibidores CDK4/6) no cubierto por el petitorio institucional de EsSalud o MINSA, requiriendo gestiones de excepción o compra de bolsillo.",
+    "priv": "En el sector privado, al 46.5% (59 pacientes) se le prescribió tratamientos innovadores no cubiertos por la póliza base de su seguro privado o EPS, debiendo gestionar coberturas especiales o asumir copagos considerables."
+  }
+};
+
+
     // Catálogo de orden canónico oficial por columna (para no ordenar por cantidad de datos)
     const QUESTION_CANONICAL_ORDER = {
       // Perfil
@@ -1044,6 +1240,126 @@ const charts = {};
               <div class="q-analysis-title">📌 Análisis de Resultados — ${q.code}</div>
               <div>${q.analysis}</div>
             </div>
+
+            <div class="segment-actions">
+              <button type="button" id="btn-pub-${q.col}" class="btn-seg btn-public" onclick="toggleSector('${q.col}', 'public')">
+                🏢 Ver Sector Público (485)
+              </button>
+              <button type="button" id="btn-priv-${q.col}" class="btn-seg btn-private" onclick="toggleSector('${q.col}', 'priv')">
+                🏥 Ver Sector Privado (127)
+              </button>
+            </div>
+
+            <!-- DRAWER PÚBLICO -->
+            <div class="segment-drawer" id="drawer-pub-${q.col}">
+              <div class="segment-layout">
+                <div class="seg-left-card">
+                  <div>
+                    <span class="seg-header-badge badge-pub">🏢 Sector Público (EsSalud, MINSA, FF.AA.: N = 485)</span>
+                    <div class="seg-chart-wrapper">
+                      <canvas id="chart-pub-${q.col}"></canvas>
+                    </div>
+                  </div>
+                  <div class="seg-narrative" id="narr-pub-${q.col}">Cargando análisis...</div>
+                </div>
+                <div class="seg-right-card">
+                  <div class="seg-right-title">
+                    <span>Composición del Sector</span>
+                    <span>485 Casos</span>
+                  </div>
+                  <div class="entity-list">
+                    <div class="entity-item">
+                      <div class="entity-info">
+                        <div class="entity-logo-badge logo-essalud">EsS</div>
+                        <div>
+                          <div class="entity-name">EsSalud</div>
+                          <div class="entity-sub">Seguro Social de Salud</div>
+                        </div>
+                      </div>
+                      <div class="entity-data">
+                        <div class="entity-n">282</div>
+                        <div class="entity-pct">58.1%</div>
+                      </div>
+                    </div>
+                    <div class="entity-item">
+                      <div class="entity-info">
+                        <div class="entity-logo-badge logo-minsa">MIN</div>
+                        <div>
+                          <div class="entity-name">MINSA / SIS</div>
+                          <div class="entity-sub">Ministerio de Salud</div>
+                        </div>
+                      </div>
+                      <div class="entity-data">
+                        <div class="entity-n">182</div>
+                        <div class="entity-pct">37.5%</div>
+                      </div>
+                    </div>
+                    <div class="entity-item">
+                      <div class="entity-info">
+                        <div class="entity-logo-badge logo-ffaa">FFAA</div>
+                        <div>
+                          <div class="entity-name">Sanidad FF.AA. / PNP</div>
+                          <div class="entity-sub">Fuerzas Armadas</div>
+                        </div>
+                      </div>
+                      <div class="entity-data">
+                        <div class="entity-n">21</div>
+                        <div class="entity-pct">4.3%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DRAWER PRIVADO -->
+            <div class="segment-drawer" id="drawer-priv-${q.col}">
+              <div class="segment-layout">
+                <div class="seg-left-card">
+                  <div>
+                    <span class="seg-header-badge badge-priv">🏥 Sector Privado (Seguros, EPS, Particular: N = 127)</span>
+                    <div class="seg-chart-wrapper">
+                      <canvas id="chart-priv-${q.col}"></canvas>
+                    </div>
+                  </div>
+                  <div class="seg-narrative priv" id="narr-priv-${q.col}">Cargando análisis...</div>
+                </div>
+                <div class="seg-right-card">
+                  <div class="seg-right-title">
+                    <span>Composición del Sector</span>
+                    <span>127 Casos</span>
+                  </div>
+                  <div class="entity-list">
+                    <div class="entity-item">
+                      <div class="entity-info">
+                        <div class="entity-logo-badge logo-eps">EPS</div>
+                        <div>
+                          <div class="entity-name">Seguro Privado</div>
+                          <div class="entity-sub">Pólizas y Empresas</div>
+                        </div>
+                      </div>
+                      <div class="entity-data">
+                        <div class="entity-n">110</div>
+                        <div class="entity-pct">86.6%</div>
+                      </div>
+                    </div>
+                    <div class="entity-item">
+                      <div class="entity-info">
+                        <div class="entity-logo-badge logo-part">PAR</div>
+                        <div>
+                          <div class="entity-name">Atención Particular</div>
+                          <div class="entity-sub">Gasto de Bolsillo Directo</div>
+                        </div>
+                      </div>
+                      <div class="entity-data">
+                        <div class="entity-n">17</div>
+                        <div class="entity-pct">13.4%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           `;
 
           root.appendChild(card);
@@ -1156,7 +1472,320 @@ const charts = {};
       setupScrollSpy();
     }
 
-    let scrollSpyObserver = null;
+    
+    // Adaptador de lectura normalizada para sector
+    function getRecordAnswer(col, r) {
+      let val = (col === 'M') ? r.H : r[col];
+      return normalizeAnswer(col, val);
+    }
+
+    // Conteo y ordenamiento canónico para análisis sectorial
+    function getSectorStats(records, col) {
+      const counts = {};
+      let valid = 0;
+      records.forEach(r => {
+        const val = getRecordAnswer(col, r);
+        counts[val] = (counts[val] || 0) + 1;
+        if (val !== 'Sin respuesta' && val !== 'No respondió' && val !== 'No corresponde') valid++;
+      });
+
+      const canonicalOrder = QUESTION_CANONICAL_ORDER[col] || null;
+
+      const entries = Object.entries(counts).sort((a, b) => {
+        const labelA = a[0];
+        const labelB = b[0];
+
+        if (labelA === 'No corresponde') return 1;
+        if (labelB === 'No corresponde') return -1;
+        if (labelA === 'No respondió' || labelA === 'Sin respuesta') return 1;
+        if (labelB === 'No respondió' || labelB === 'Sin respuesta') return -1;
+        if (labelA === 'No recuerdo' && labelB !== 'No respondió' && labelB !== 'No corresponde') return 1;
+        if (labelB === 'No recuerdo' && labelA !== 'No respondió' && labelA !== 'No corresponde') return -1;
+
+        if (canonicalOrder) {
+          const idxA = canonicalOrder.indexOf(labelA);
+          const idxB = canonicalOrder.indexOf(labelB);
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          if (idxA !== -1) return -1;
+          if (idxB !== -1) return 1;
+        }
+
+        return b[1] - a[1];
+      });
+
+      return {
+        total: records.length,
+        valid,
+        entries
+      };
+    }
+
+    // Actualización dinámica de la tarjeta de entidades según opción seleccionada
+    function updateEntityCard(col, sector, selectedOption) {
+      const isPub = (sector === 'public');
+      const drawer = document.getElementById((isPub ? 'drawer-pub-' : 'drawer-priv-') + col);
+      if (!drawer) return;
+
+      const titleEl = drawer.querySelector('.seg-right-title');
+      const listEl = drawer.querySelector('.entity-list');
+      if (!titleEl || !listEl) return;
+
+      const sectorRecords = DATA.records.filter(r => isPub ? pubList.includes(r.J) : privList.includes(r.J));
+      let targetRecords = sectorRecords;
+      let headerTitle = 'Composición del Sector';
+      let headerBadge = isPub ? '485 Casos' : '127 Casos';
+
+      if (selectedOption) {
+        targetRecords = sectorRecords.filter(r => getRecordAnswer(col, r) === selectedOption);
+        const optDisplay = selectedOption.length > 20 ? selectedOption.substring(0, 18) + '…' : selectedOption;
+        headerTitle = 'Detalle: "' + optDisplay + '"';
+        headerBadge = targetRecords.length + ' Casos';
+      }
+
+      titleEl.innerHTML = '<span>' + headerTitle + '</span><span style="background:' + (selectedOption ? '#fef3c7; color:#92400e; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.75rem;' : '') + '">' + headerBadge + '</span>';
+
+      const totalBase = targetRecords.length;
+
+      if (isPub) {
+        const cEssalud = targetRecords.filter(r => r.J === 'EsSalud').length;
+        const cMinsa = targetRecords.filter(r => r.J === 'Minsa').length;
+        const cFFAA = targetRecords.filter(r => r.J === 'FFAA').length;
+
+        const pEssalud = totalBase ? ((cEssalud / totalBase) * 100).toFixed(1) : '0.0';
+        const pMinsa = totalBase ? ((cMinsa / totalBase) * 100).toFixed(1) : '0.0';
+        const pFFAA = totalBase ? ((cFFAA / totalBase) * 100).toFixed(1) : '0.0';
+
+        listEl.innerHTML = 
+          '<div class="entity-item">' +
+            '<div class="entity-info">' +
+              '<div class="entity-logo-badge logo-essalud">EsS</div>' +
+              '<div><div class="entity-name">EsSalud</div><div class="entity-sub">Seguro Social</div></div>' +
+            '</div>' +
+            '<div class="entity-data"><div class="entity-n">' + cEssalud + '</div><div class="entity-pct">' + pEssalud + '%</div></div>' +
+          '</div>' +
+          '<div class="entity-item">' +
+            '<div class="entity-info">' +
+              '<div class="entity-logo-badge logo-minsa">MIN</div>' +
+              '<div><div class="entity-name">MINSA / SIS</div><div class="entity-sub">Ministerio de Salud</div></div>' +
+            '</div>' +
+            '<div class="entity-data"><div class="entity-n">' + cMinsa + '</div><div class="entity-pct">' + pMinsa + '%</div></div>' +
+          '</div>' +
+          '<div class="entity-item">' +
+            '<div class="entity-info">' +
+              '<div class="entity-logo-badge logo-ffaa">FFAA</div>' +
+              '<div><div class="entity-name">FF.AA. / PNP</div><div class="entity-sub">Fuerzas Armadas</div></div>' +
+            '</div>' +
+            '<div class="entity-data"><div class="entity-n">' + cFFAA + '</div><div class="entity-pct">' + pFFAA + '%</div></div>' +
+          '</div>';
+      } else {
+        const cPriv = targetRecords.filter(r => r.J === 'Seguro Privado').length;
+        const cPart = targetRecords.filter(r => r.J === 'Particular').length;
+
+        const pPriv = totalBase ? ((cPriv / totalBase) * 100).toFixed(1) : '0.0';
+        const pPart = totalBase ? ((cPart / totalBase) * 100).toFixed(1) : '0.0';
+
+        listEl.innerHTML = 
+          '<div class="entity-item">' +
+            '<div class="entity-info">' +
+              '<div class="entity-logo-badge logo-eps">EPS</div>' +
+              '<div><div class="entity-name">Seguro Privado</div><div class="entity-sub">Pólizas y Empresas</div></div>' +
+            '</div>' +
+            '<div class="entity-data"><div class="entity-n">' + cPriv + '</div><div class="entity-pct">' + pPriv + '%</div></div>' +
+          '</div>' +
+          '<div class="entity-item">' +
+            '<div class="entity-info">' +
+              '<div class="entity-logo-badge logo-part">PAR</div>' +
+              '<div><div class="entity-name">Atención Particular</div><div class="entity-sub">Gasto Directo</div></div>' +
+            '</div>' +
+            '<div class="entity-data"><div class="entity-n">' + cPart + '</div><div class="entity-pct">' + pPart + '%</div></div>' +
+          '</div>';
+      }
+    }
+
+    // Renderizado del contenido y gráfico apilado del sector
+    function renderSectorContent(col, sector) {
+      const isPub = (sector === 'public');
+      const chartId = (isPub ? 'chart-pub-' : 'chart-priv-') + col;
+      const narrId = (isPub ? 'narr-pub-' : 'narr-priv-') + col;
+
+      const sectorRecords = DATA.records.filter(r => isPub ? pubList.includes(r.J) : privList.includes(r.J));
+      const stats = getSectorStats(sectorRecords, col);
+      const validEntries = stats.entries.filter(e => e[0] !== 'Sin respuesta' && e[0] !== 'No corresponde');
+
+      updateEntityCard(col, sector, null);
+
+      const narrEl = document.getElementById(narrId);
+      if (narrEl) {
+        const customAnalysis = SECTOR_ANALYSIS[col];
+        if (customAnalysis) {
+          narrEl.innerHTML = isPub ? customAnalysis.pub : customAnalysis.priv;
+        } else if (validEntries.length > 0) {
+          const top1 = validEntries[0];
+          const top1Pct = ((top1[1] / stats.total) * 100).toFixed(1);
+          narrEl.innerHTML = 'En el sector ' + (isPub ? 'público' : 'privado') + ', la opción más frecuente fue <strong>' + top1[0] + '</strong> con ' + top1[1] + ' casos (' + top1Pct + '%).';
+        }
+      }
+
+      const chartKey = 'sec-' + chartId;
+      if (charts[chartKey]) {
+        charts[chartKey].destroy();
+        delete charts[chartKey];
+      }
+
+      const ctx = document.getElementById(chartId);
+      if (!ctx) return;
+
+      const labels = validEntries.map(e => e[0]);
+
+      let stackedDatasets = [];
+      if (isPub) {
+        const dEssalud = labels.map(l => sectorRecords.filter(r => r.J === 'EsSalud' && getRecordAnswer(col, r) === l).length);
+        const dMinsa = labels.map(l => sectorRecords.filter(r => r.J === 'Minsa' && getRecordAnswer(col, r) === l).length);
+        const dFFAA = labels.map(l => sectorRecords.filter(r => r.J === 'FFAA' && getRecordAnswer(col, r) === l).length);
+
+        stackedDatasets = [
+          {
+            label: 'EsSalud',
+            data: dEssalud,
+            backgroundColor: '#e596b2',
+            borderRadius: { topLeft: 4, bottomLeft: 4 },
+            barPercentage: 0.72
+          },
+          {
+            label: 'MINSA / SIS',
+            data: dMinsa,
+            backgroundColor: '#e66f95',
+            barPercentage: 0.72
+          },
+          {
+            label: 'FF.AA. / PNP',
+            data: dFFAA,
+            backgroundColor: '#656261',
+            borderRadius: { topRight: 4, bottomRight: 4 },
+            barPercentage: 0.72
+          }
+        ];
+      } else {
+        const dPrivado = labels.map(l => sectorRecords.filter(r => r.J === 'Seguro Privado' && getRecordAnswer(col, r) === l).length);
+        const dParticular = labels.map(l => sectorRecords.filter(r => r.J === 'Particular' && getRecordAnswer(col, r) === l).length);
+
+        stackedDatasets = [
+          {
+            label: 'Seguro Privado',
+            data: dPrivado,
+            backgroundColor: '#7359a0',
+            borderRadius: { topLeft: 4, bottomLeft: 4 },
+            barPercentage: 0.72
+          },
+          {
+            label: 'Atención Particular',
+            data: dParticular,
+            backgroundColor: '#aea2d0',
+            borderRadius: { topRight: 4, bottomRight: 4 },
+            barPercentage: 0.72
+          }
+        ];
+      }
+
+      charts[chartKey] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: stackedDatasets
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: function(evt, elements) {
+            if (elements && elements.length > 0) {
+              const clickedIdx = elements[0].index;
+              const selectedOpt = labels[clickedIdx];
+              updateEntityCard(col, sector, selectedOpt);
+            } else {
+              updateEntityCard(col, sector, null);
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              align: 'end',
+              labels: {
+                boxWidth: 12,
+                boxHeight: 12,
+                useBorderRadius: true,
+                borderRadius: 3,
+                font: { family: 'Inter', size: 11, weight: '600' },
+                padding: 12
+              }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                title: function(items) {
+                  return items[0].label;
+                },
+                label: function(c) {
+                  const val = c.raw;
+                  return ' ' + c.dataset.label + ': ' + val + ' casos';
+                },
+                footer: function(items) {
+                  let sum = 0;
+                  items.forEach(i => sum += i.raw);
+                  const pct = ((sum / stats.total) * 100).toFixed(1);
+                  return 'Total respuesta: ' + sum + ' personas (' + pct + '% del sector)';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { color: '#f1f5f9' },
+              ticks: { precision: 0 }
+            },
+            y: {
+              stacked: true,
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    // Toggle de acordeón / drawer
+    function toggleSector(col, sector) {
+      const drawerPub = document.getElementById('drawer-pub-' + col);
+      const drawerPriv = document.getElementById('drawer-priv-' + col);
+      const btnPub = document.getElementById('btn-pub-' + col);
+      const btnPriv = document.getElementById('btn-priv-' + col);
+
+      const isPub = (sector === 'public');
+      const targetDrawer = isPub ? drawerPub : drawerPriv;
+      const otherDrawer = isPub ? drawerPriv : drawerPub;
+      const targetBtn = isPub ? btnPub : btnPriv;
+      const otherBtn = isPub ? btnPriv : btnPub;
+
+      if (!targetDrawer) return;
+
+      if (otherDrawer) otherDrawer.classList.remove('is-open');
+      if (otherBtn) otherBtn.classList.remove('active');
+
+      const willOpen = !targetDrawer.classList.contains('is-open');
+      targetDrawer.classList.toggle('is-open', willOpen);
+      if (targetBtn) {
+        targetBtn.classList.toggle('active', willOpen);
+      }
+
+      if (willOpen) {
+        renderSectorContent(col, sector);
+      }
+    }
+    window.toggleSector = toggleSector;
+
+let scrollSpyObserver = null;
     function setupScrollSpy() {
       if (scrollSpyObserver) {
         scrollSpyObserver.disconnect();
