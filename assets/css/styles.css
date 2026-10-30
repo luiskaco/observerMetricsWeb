@@ -1262,15 +1262,21 @@ table.ans-table tr.na-row td {
 }
 
 .seg-header-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.78rem;
+  display: inline-block;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
   margin-bottom: 0.85rem;
   width: fit-content;
+  line-height: 1.45;
+}
+
+.seg-badge-n {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.88;
 }
 
 .badge-pub {

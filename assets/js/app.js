@@ -1255,7 +1255,7 @@ const charts = {};
               <div class="segment-layout">
                 <div class="seg-left-card">
                   <div>
-                    <span class="seg-header-badge badge-pub">🏢 Sector Público (EsSalud, MINSA, FF.AA.: N = 485)</span>
+                    <span class="seg-header-badge badge-pub">🏢 Sector Público (EsSalud, MINSA, FF.AA.)<br><span class="seg-badge-n">(N = 485)</span></span>
                     <div class="seg-chart-wrapper">
                       <canvas id="chart-pub-${q.col}"></canvas>
                     </div>
@@ -1317,7 +1317,7 @@ const charts = {};
               <div class="segment-layout">
                 <div class="seg-left-card">
                   <div>
-                    <span class="seg-header-badge badge-priv">🏥 Sector Privado (Seguros, EPS, Particular: N = 127)</span>
+                    <span class="seg-header-badge badge-priv">🏥 Sector Privado (Seguros, EPS, Particular)<br><span class="seg-badge-n">(N = 127)</span></span>
                     <div class="seg-chart-wrapper">
                       <canvas id="chart-priv-${q.col}"></canvas>
                     </div>
